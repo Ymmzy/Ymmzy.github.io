@@ -1,0 +1,51 @@
+*,:after,:before {
+    box-sizing: border-box;
+    font-size: 1rem;
+    font-family: Segoe_UI_Symbol;
+}
+
+html {
+	-webkit-text-size-adjust: 100%;
+	font-size: 14px;
+}
+
+body {
+	padding: .5rem;
+	margin: 0;
+}
+
+button {
+	width: 100%;
+	height: 100%;
+	padding: .4rem;
+}
+
+#btns {
+	width: 100%;
+	padding: 0;
+}
+
+#status {
+    width: calc(100% - 4px);
+    border: .1rem solid gray;
+    padding: .2rem .5rem .3rem .5rem;
+    margin-top: .5rem;
+    margin-left: 2px;
+    overflow: auto;
+}
+
+.show_status {
+	display: block;
+	color: gray;
+}
+
+:is(.hide_status .show_status) {
+	display: none;
+}
+
+@font-face {
+    font-display: swap;
+    font-family: Segoe_UI_Symbol;
+    font-weight: 700;
+    src: local("Segoe_UI_Symbol"),url(/media/Segoe_UI_Symbol.ttf) format("truetype")
+}
