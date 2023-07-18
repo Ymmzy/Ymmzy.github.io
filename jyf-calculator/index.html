@@ -73,8 +73,8 @@
             }
 
             #Char {
-                 width: 100%;
-             }
+                width: 100%;
+            }
 
             #EftGrid {
                 /*width: 320px;*/
@@ -105,12 +105,13 @@
         .char-attr-grid-tooltip {
             color: white;
             background: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.9));
-            font-size: 13px;
+            font-size: 14px;
             text-align: left;
             box-sizing: border-box;
-            border-right: rgb(61,62,61) solid 1px;
-            padding: 5px 4px 4px 4px;
+            border-right: rgb(61, 62, 61) solid 1px;
+            padding: 4px;
             display: inline-flex;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
         }
 
         .char-attr-grid-tooltip .attack {
@@ -252,7 +253,8 @@
             box-shadow: none;
             text-shadow: none;
             background: white;
-            padding: 8px 20px;
+            padding: 8px 12px;
+            margin-left: 12px;
         }
 
         .aui_buttons button.aui_state_highlight {
@@ -321,6 +323,7 @@
     </div>
     <div id="EftGrid" class="ag-theme-alpine-dark"></div>
 </div>
+<!-- <script type="module" src="src/start.js"></script> -->
 <script type="module" src="dist/bundle.js"></script>
 </body>
 </html>
