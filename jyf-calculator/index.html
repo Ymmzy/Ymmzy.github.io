@@ -323,6 +323,18 @@
     </div>
     <div id="EftGrid" class="ag-theme-alpine-dark"></div>
 </div>
+<script>
+    // disable pull to refresh
+    let lastY = 0;
+    window.addEventListener('touchmove', function (e) {
+        let scrollY = window.pageYOffset || window.scrollTop || 0;
+        let direction = e.changedTouches[0].pageY > lastY ? 1 : -1;
+        if (direction > 0 && scrollY === 0) {
+            e.preventDefault();
+        }
+        lastY = e.changedTouches[0].pageY;
+    }, {passive: false});
+</script>
 <!-- <script type="module" src="src/start.js"></script> -->
 <script type="module" src="dist/bundle.js"></script>
 </body>
