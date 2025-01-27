@@ -112,13 +112,13 @@ export default {
     achievement: '命中注定',
     description: '获得的祝福'
   },
-  village_totalOffering: {
+  village_offering: {
     achievement: '虚无主义者',
-    description: '牺牲总数'
+    description: '供品总数'
   },
-  village_bestOffering: {
+  village_sacrifice: {
     achievement: '黑洞',
-    description: '一次声望中最大牺牲次数'
+    description: '牺牲次数'
   },
   village_oil: {
     achievement: '拿走他们的油!',
