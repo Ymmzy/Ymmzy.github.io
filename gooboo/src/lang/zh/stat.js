@@ -114,7 +114,7 @@ export default {
   },
   village_offering: {
     achievement: '虚无主义者',
-    description: '供品总数'
+    description: '获得的供品'
   },
   village_sacrifice: {
     achievement: '黑洞',
