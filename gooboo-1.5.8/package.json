@@ -1,0 +1,86 @@
+{
+  "name": "gooboo",
+  "version": "1.5.8",
+  "description": "An idle game",
+  "author": "Tendsty",
+  "main": "main.js",
+  "private": false,
+  "license": "GPL-3.0-or-later",
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "deploy": "node scripts/gh-pages-deploy.mjs",
+    "test:unit": "jest test/unit --verbose --coverage",
+    "test:unit-custom": "jest --verbose",
+    "test:e2e": "cypress open",
+    "electron:start": "electron .",
+    "forge:start": "electron-forge start",
+    "forge:package": "electron-forge package",
+    "forge:make": "electron-forge make"
+  },
+  "dependencies": {
+    "@fontsource/caveat": "^4.5.9",
+    "@fontsource/roboto": "^4.5.8",
+    "@fontsource/roboto-mono": "^5.0.3",
+    "@mdi/font": "^7.3.67",
+    "color": "^4.2.3",
+    "core-js": "^3.33.0",
+    "electron-squirrel-startup": "^1.0.0",
+    "js-file-download": "^0.4.12",
+    "seedrandom": "^3.0.5",
+    "semver": "^7.5.4",
+    "v-snackbars": "^3.2.8",
+    "vue": "^2.7.14",
+    "vuetify": "^2.7.1",
+    "vuex": "^3.6.2"
+  },
+  "devDependencies": {
+    "@babel/eslint-parser": "^7.22.15",
+    "@electron-forge/cli": "^6.4.0",
+    "@electron-forge/maker-deb": "^6.4.0",
+    "@electron-forge/maker-rpm": "^6.4.0",
+    "@electron-forge/maker-squirrel": "^6.4.0",
+    "@electron-forge/maker-zip": "^6.4.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^6.4.0",
+    "@vue/cli-plugin-babel": "~5.0.8",
+    "@vue/cli-plugin-eslint": "~5.0.8",
+    "@vue/cli-service": "~5.0.8",
+    "cypress": "^13.2.0",
+    "electron": "^26.0.0",
+    "electron-winstaller": "^5.1.0",
+    "eslint": "^8.51.0",
+    "eslint-plugin-vue": "^9.17.0",
+    "execa": "^8.0.1",
+    "jest": "^29.7.0",
+    "sass": "~1.32.13",
+    "sass-loader": "^13.3.2",
+    "vue-cli-plugin-vuetify": "~2.5.8",
+    "vue-template-compiler": "^2.7.14",
+    "vuetify-loader": "^1.9.2"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended"
+    ],
+    "parserOptions": {
+      "parser": "@babel/eslint-parser",
+      "ecmaVersion": 8,
+      "requireConfigFile": false
+    },
+    "rules": {
+      "vue/multi-word-component-names": "off",
+      "vue/valid-v-slot": "off"
+    }
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}
