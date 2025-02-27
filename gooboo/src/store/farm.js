@@ -670,7 +670,7 @@ export default {
         },
         getCropExp({ state, getters, commit, dispatch }, o) {
             if (o.value > 0) {
-                commit('updateCropKey', {name: o.crop, key: 'exp', value: state.crop[o.crop].exp + o.value});
+                commit('updateCropKey', {name: o.crop, key: 'exp', value: state.crop[o.crop].exp + o.value * 10}); // ymmzy
             }
             let leveled = false;
             while (state.crop[o.crop].exp >= getters.expNeeded(o.crop)) {
