@@ -141,7 +141,7 @@ export default {
             const feature = o.feature ?? 'meta';
             const name = feature + '_' + o.name;
             let gained = 0;
-            const amount = (o.gainMult ? rootGetters['mult/get'](getters.gainMultName(feature, o.name), o.amount) : o.amount) * 10;
+            const amount = (o.gainMult ? rootGetters['mult/get'](getters.gainMultName(feature, o.name), o.amount) : o.amount) * 10; // ymmzy
             if (state[name].cap === null) {
                 gained = amount;
             } else if (state[name].overcapMult > 0) {

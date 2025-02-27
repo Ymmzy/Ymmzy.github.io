@@ -1173,7 +1173,7 @@ export default {
             for (const [key, elem] of Object.entries(state.items)) {
                 const masteryBase = getters.masteryBaseGain(key);
                 if (elem.equipped && masteryBase > 0) {
-                    commit('updateItemKey', {name: key, key: 'masteryPoint', value: elem.masteryPoint + rootGetters['mult/get']('hordeItemMasteryGain', masteryBase) * amount});
+                    commit('updateItemKey', {name: key, key: 'masteryPoint', value: elem.masteryPoint + rootGetters['mult/get']('hordeItemMasteryGain', masteryBase) * amount * 10}); // ymmzy
                     while (state.items[key].masteryPoint >= getters.masteryRequired(key, state.items[key].masteryLevel)) {
                         updateMasteryStats = true;
                         commit('updateItemKey', {name: key, key: 'masteryLevel', value: state.items[key].masteryLevel + 1});
@@ -1454,7 +1454,7 @@ export default {
             if (found[chosen] === undefined) {
                 found[chosen] = 0;
             }
-            found[chosen] += amount;
+            found[chosen] += amount * 10; // ymmzy
             commit('updateKey', {key: 'heirloomsFound', value: found});
         },
         applyHeirloomEffects({ state, rootState, rootGetters, dispatch }, name) {

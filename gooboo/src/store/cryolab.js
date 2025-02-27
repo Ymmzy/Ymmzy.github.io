@@ -30,7 +30,7 @@ export default {
                     gain += baseValue * Math.pow(1.1, baseValue) * 40;
                 }
             }
-            return gain;
+            return gain * 10; // ymmzy
         },
         prestigeGain: (state, getters, rootState, rootGetters) => (feature) => {
             const subfeature = rootState.system.features[feature].currentSubfeature;
