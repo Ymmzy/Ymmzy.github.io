@@ -51,11 +51,11 @@ export default {
             }
 
             if (eventProgress > 0) {
-                store.dispatch('currency/gain', {feature: 'event', name: store.state.event.big[lastEvent].currency, amount: eventProgress * 10});
+                store.dispatch('currency/gain', {feature: 'event', name: store.state.event.big[lastEvent].currency, amount: eventProgress});
                 store.dispatch('note/find', 'event_2');
             }
             if (topazProgress > 0) {
-                store.dispatch('currency/gain', {feature: 'gem', name: 'topaz', amount: topazProgress * 10});
+                store.dispatch('currency/gain', {feature: 'gem', name: 'topaz', amount: topazProgress});
             }
         } else {
             progress += seconds * genSpeed;
@@ -64,7 +64,7 @@ export default {
         if (progress >= 1) {
             const gems = Math.floor(progress);
             ['ruby', 'emerald', 'sapphire', 'amethyst'].forEach(elem => {
-                store.dispatch('currency/gain', {feature: 'gem', name: elem, amount: gems * 10});
+                store.dispatch('currency/gain', {feature: 'gem', name: elem, amount: gems});
             });
             progress -= gems;
         }

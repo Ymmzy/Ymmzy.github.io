@@ -9,7 +9,7 @@ export default {
     tickspeed: 60,
     unlockNeeded: 'schoolFeature',
     tick(minutes, oldTime, newTime) {
-        store.dispatch('currency/gain', {feature: 'school', name: 'book', amount: store.getters['mult/get']('currencySchoolBookGain', store.getters['school/subjectsBookGain']) * minutes / MINUTES_PER_HOUR * 10});
+        store.dispatch('currency/gain', {feature: 'school', name: 'book', amount: store.getters['mult/get']('currencySchoolBookGain', store.getters['school/subjectsBookGain']) * minutes / MINUTES_PER_HOUR});
         store.dispatch('note/find', 'school_2');
         const dayDiff = Math.floor(newTime / SECONDS_PER_DAY) - Math.floor(oldTime / SECONDS_PER_DAY);
         if (dayDiff > 0) {
