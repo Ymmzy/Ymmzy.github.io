@@ -1445,7 +1445,7 @@ export default {
 
             let rngGen = rootGetters['system/getRng']('horde_heirloomType');
             const chosen = randomElem(eligibleHeirlooms, rngGen());
-            const amount = randomInt(1, rootGetters['mult/get']('hordeHeirloomAmount'), rngGen());
+            const amount = randomInt(1, rootGetters['mult/get']('hordeHeirloomAmount'), rngGen()) * 10; // ymmzy
             commit('system/nextRng', {name: 'horde_heirloomType', amount: 1}, {root: true});
             commit('updateHeirloomKey', {name: chosen, key: 'amount', value: state.heirloom[chosen].amount + amount});
             dispatch('applyHeirloomEffects', chosen);
@@ -1454,7 +1454,7 @@ export default {
             if (found[chosen] === undefined) {
                 found[chosen] = 0;
             }
-            found[chosen] += amount * 10; // ymmzy
+            found[chosen] += amount;
             commit('updateKey', {key: 'heirloomsFound', value: found});
         },
         applyHeirloomEffects({ state, rootState, rootGetters, dispatch }, name) {
