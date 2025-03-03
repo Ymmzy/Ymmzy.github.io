@@ -88,7 +88,7 @@ export const TREASURE_FRAGMENT_BUY_GAIN = 4;
 export const GEM_SPEED_BASE = 360; // ymmzy
 export const GEM_SPEED_PER_ACHIEVEMENT = 0.01;
 
-export const SCHOOL_BOOK_BASE_GAIN = 100; // ymmzy
+export const SCHOOL_BOOK_BASE_GAIN = 10;
 export const SCHOOL_STUDY_TIME = 40;
 export const SCHOOL_EXAM_TIME = 75;
 export const SCHOOL_EXAM_DUST_MIN = 1000; // ymmzy
