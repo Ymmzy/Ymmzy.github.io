@@ -148,7 +148,7 @@ export default {
         if (store.state.unlock.hordeBrickTower.see) {
             const dayDiff = Math.floor(newTime / (SECONDS_PER_DAY * 7)) - Math.floor(oldTime / (SECONDS_PER_DAY * 7));
             if (dayDiff > 0) {
-                store.dispatch('currency/gain', {feature: 'horde', name: 'towerKey', amount: dayDiff}, {root: true});
+                store.dispatch('currency/gain', {feature: 'horde', name: 'towerKey', amount: dayDiff * 10}, {root: true}); // ymmzy
             }
         }
     },
