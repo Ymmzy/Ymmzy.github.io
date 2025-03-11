@@ -91,7 +91,7 @@ export default {
             for (let p = 0; p < 2; p++) {
                 for (const [key, elem] of Object.entries(store.state.village.crafting)) {
                     if (elem.isCrafting && elem.prio === p) {
-                        let newProgress = elem.progress + seconds / elem.timeNeeded;
+                        let newProgress = elem.progress + seconds / elem.timeNeeded * 10; // ymmzy
                         const payments = Math.ceil(newProgress) - Math.ceil(elem.progress);
                         if (payments > 0) {
                             let maxAfford = payments;
@@ -169,7 +169,7 @@ export default {
                         store.commit('village/updateSubkey', {key: 'crafting', name: key, subkey: 'progress', value: newProgress});
                     }
                     if (elem.isSelling && elem.prio === p && elem.sellPrice > 0 && elem.owned > 0) {
-                        const sold = Math.min(randomRound(seconds * elem.cacheSellChance), elem.owned);
+                        const sold = Math.min(randomRound(seconds * elem.cacheSellChance * 10), elem.owned); // ymmzy
                         if (sold > 0) {
                             store.dispatch('currency/gain', {feature: 'village', name: 'copperCoin', gainMult: true, amount: sold * elem.sellPrice});
                             store.commit('village/updateSubkey', {key: 'crafting', name: key, subkey: 'owned', value: elem.owned - sold});

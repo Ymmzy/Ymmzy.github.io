@@ -189,7 +189,7 @@ export default {
         if (subfeature === 1) {
             const oldProgress = store.state.horde.expLevel;
             let progress = store.state.horde.expLevel;
-            let secondsLeft = seconds;
+            let secondsLeft = seconds * 10; // ymmzy
             while (secondsLeft > 0) {
                 const difficulty = store.getters['horde/expDifficulty'](Math.floor(progress));
                 const timeUsed = Math.min((Math.floor(progress + 1) - progress) * difficulty, secondsLeft);
@@ -211,7 +211,7 @@ export default {
 
             // Boss pass gain
             if (store.state.horde.selectedClass === 'pirate') {
-                store.dispatch('currency/gain', {feature: 'horde', name: 'lockpick', amount: store.getters['mult/get'](`currencyHordeLockpickGain`) * seconds});
+                store.dispatch('currency/gain', {feature: 'horde', name: 'lockpick', amount: store.getters['mult/get'](`currencyHordeLockpickGain`) * seconds * 10}); // ymmzy
             }
         }
 
