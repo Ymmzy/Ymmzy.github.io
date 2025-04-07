@@ -1,10 +1,10 @@
-import {equipmentData} from "./Data.js"
+import {EQUIPMENT_DATA} from "./Data.js"
 
 export default class Equipment {
     constructor(param) {
         // 如果参数是字符串，从 equipmentData 中查找匹配的装备
         if (typeof param === 'string') {
-            const equipment = equipmentData.find(item => item.name === param);
+            const equipment = EQUIPMENT_DATA.find(item => item.name === param);
             if (!equipment) {
                 throw new Error(`Equipment "${param}" not found!`);
             }

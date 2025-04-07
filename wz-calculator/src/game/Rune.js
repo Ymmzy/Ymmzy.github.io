@@ -1,10 +1,10 @@
-import {runeData} from "./Data.js";
+import {RUNE_DATA} from "./Data.js";
 
 export default class Rune {
     constructor(param) {
         // 如果参数是字符串，从 runeData 中查找符文
         if (typeof param === 'string') {
-            const rune = runeData.find(item => item.name === param);
+            const rune = RUNE_DATA.find(item => item.name === param);
             if (!rune) {
                 throw new Error(`Rune "${param}" not found in runeData!`);
             }
