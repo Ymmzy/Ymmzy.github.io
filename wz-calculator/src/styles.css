@@ -1,283 +1,8 @@
-/** {*/
-/*    box-sizing: border-box;*/
-/*    margin: 0;*/
-/*    padding: 0;*/
-/*}*/
-
-/*html {*/
-/*    overflow-y: auto;*/
-/*    overflow-x: hidden;*/
-/*    --bg-op: 0.1;*/
-/*    --font-attack-color: rgb(255, 127, 127);*/
-/*    --font-defense-color: rgb(127, 127, 255);*/
-/*    --bg-red-color: rgba(255, 0, 0, var(--bg-op));*/
-/*    --bg-blue-color: rgba(0, 0, 255, var(--bg-op));*/
-/*    --bg-purple-color: rgba(255, 0, 255, var(--bg-op));*/
-/*    --bg-green-color: rgba(0, 255, 0, var(--bg-op));*/
-/*    --bg-yellow-color: rgba(255, 255, 0, var(--bg-op));*/
-/*}*/
-
-/*body {*/
-/*    padding: 8px;*/
-/*    background-color: #0E1416;*/
-/*}*/
-
-/*#calc-root {*/
-/*    display: flex;*/
-/*    gap: 8px;*/
-/*}*/
-
-/*.left-section, .right-section {*/
-/*    display: flex;*/
-/*    flex-direction: column;*/
-/*    gap: 8px;*/
-/*}*/
-
-/*.component {*/
-/*    width: 100%;*/
-/*}*/
-
-/*!* 当宽度大于400px时的布局 *!*/
-/*@media (min-width: 401px) {*/
-/*    .container {*/
-/*        flex-direction: row;*/
-/*        height: calc(100vh - 16px); !* 减去上下padding *!*/
-/*    }*/
-
-/*    .left-section {*/
-/*        width: 320px;*/
-/*        flex-shrink: 0;*/
-/*    }*/
-
-/*    .right-section {*/
-/*        flex: 1;*/
-/*    }*/
-
-/*    #heroGrid {*/
-/*        height: 450px;*/
-/*    }*/
-
-/*    #equipmentGrid {*/
-/*        height: 203px;*/
-/*    }*/
-
-/*    #runeGrid {*/
-/*        flex: 1;*/
-/*        min-height: 0; !* 允许缩小 *!*/
-/*    }*/
-
-/*    #shopGrid {*/
-/*        height: 600px;*/
-/*    }*/
-
-/*    #runeShopGrid {*/
-/*        flex: 1;*/
-/*        min-height: 0; !* 允许缩小 *!*/
-/*    }*/
-/*}*/
-
-/*!* 当宽度小于等于400px时的布局 *!*/
-/*@media (max-width: 400px) {*/
-/*    .container {*/
-/*        flex-direction: column;*/
-/*        height: auto;*/
-/*    }*/
-
-/*    #heroGrid {*/
-/*        height: 450px;*/
-/*    }*/
-
-/*    #equipmentGrid {*/
-/*        height: 203px;*/
-/*    }*/
-
-/*    #runeGrid {*/
-/*        height: 175px;*/
-/*    }*/
-
-/*    #shopGrid {*/
-/*        height: 600px;*/
-/*    }*/
-
-/*    #runeShopGrid {*/
-/*        height: 206px;*/
-/*    }*/
-/*}*/
-
-/*!* AG-Grid 容器样式 *!*/
-/*.ag-grid-container {*/
-/*    display: flex;*/
-/*    flex-direction: column;*/
-/*}*/
-
-/*!*.ag-grid-container .ag-theme-alpine-dark {*!*/
-/*!*    flex: 1;*!*/
-/*!*    width: 100%;*!*/
-/*!*    height: 100%;*!*/
-/*!*}*!*/
-
-/*#heroGrid {*/
-/*    min-height: 450px;*/
-/*    box-sizing: border-box;*/
-/*    border: var(--ag-borders) var(--ag-border-color);*/
-/*    display: flex;*/
-/*}*/
-
-/*.ag-theme-alpine-dark {*/
-/*    --ag-grid-size: 4px !important;*/
-/*}*/
-
-/*.ag-theme-alpine-dark .ag-header-cell-text {*/
-/*    text-overflow: clip !important;*/
-/*}*/
-
-/*.eft-grid-header-tooltip {*/
-/*    color: white;*/
-/*    background-color: rgba(0, 0, 0, 0.75);*/
-/*    !*translate: 0 1px;*!*/
-/*    font-size: 13px;*/
-/*    text-align: center;*/
-/*    box-sizing: border-box;*/
-/*    border-radius: 4px;*/
-/*    border: rgba(33, 150, 243, 0.75) solid 1px;*/
-/*    padding: 4px;*/
-/*}*/
-
-/*.min-w-80 {*/
-/*    min-width: 80px;*/
-/*}*/
-
-/*.overflow-visible {*/
-/*    overflow: visible !important;*/
-/*}*/
-
-/*.bg-add {*/
-/*    !*border-top: none !important;*!*/
-/*    !*border-bottom: none !important;*!*/
-/*}*/
-
-/*.bg-add::before {*/
-/*    content: "";*/
-/*    position: absolute;*/
-/*    top: 0;*/
-/*    left: 0;*/
-/*    width: 100%;*/
-/*    height: 100%;*/
-/*}*/
-
-/*.bg-red::before {*/
-/*    background-color: var(--bg-red-color);*/
-/*}*/
-
-/*.bg-green::before {*/
-/*    background-color: var(--bg-green-color);*/
-/*}*/
-
-/*.bg-blue::before {*/
-/*    background-color: var(--bg-blue-color);*/
-/*}*/
-
-/*.bg-purple::before {*/
-/*    background-color: var(--bg-purple-color);*/
-/*}*/
-
-/*.bg-yellow::before {*/
-/*    background-color: var(--bg-yellow-color);*/
-/*}*/
-
-/*.my-sub-grid {*/
-/*    width: 50%;*/
-/*}*/
-
-/*.my-sub-grid,*/
-/*.my-sub-grid .ag-root-wrapper,*/
-/*.my-sub-grid .ag-root-wrapper-body,*/
-/*.my-sub-grid .ag-root,*/
-/*.my-sub-grid .ag-body,*/
-/*.my-sub-grid .ag-body-clipper,*/
-/*.my-sub-grid .ag-body-viewport {*/
-/*    height: fit-content !important;*/
-/*    min-height: fit-content !important;*/
-/*}*/
-
-/*.my-sub-grid .ag-header {*/
-/*    display: none;*/
-/*}*/
-
-/*.my-sub-grid .ag-root-wrapper {*/
-/*    border: none;*/
-/*    border-bottom: transparent 1px;*/
-/*}*/
-
-/*#heroGrid-sub-1 {*/
-/*    border-right: var(--ag-row-border-style) var(--ag-row-border-color) var(--ag-row-border-width);*/
-/*}*/
-
-/*.my-sub-grid .ag-row:nth-child(-n+2)::before {*/
-/*    content: "";*/
-/*    position: absolute;*/
-/*    top: 0;*/
-/*    left: 0;*/
-/*    width: 100%;*/
-/*    height: 100%;*/
-/*    z-index: 1;*/
-/*}*/
-
-/*.btn {*/
-/*    width: 50px;*/
-/*    margin-right: 8px;*/
-/*}*/
-
-/*.custom-row-line {*/
-/*    height: 1px;*/
-/*    background-color: #000;*/
-/*}*/
-
-/*.aui_inner {*/
-/*    background-color: #68686e;*/
-/*    border-radius: 4px;*/
-/*}*/
-
-/*.aui_header {*/
-/*    display: none !important;*/
-/*}*/
-
-/*.aui_buttons {*/
-/*    padding-top: 4px;*/
-/*}*/
-
-/*.aui_buttons button {*/
-/*    border: none;*/
-/*    box-shadow: none;*/
-/*    text-shadow: none;*/
-/*    background: white;*/
-/*    padding: 8px 20px;*/
-/*}*/
-
-/*.aui_buttons button.aui_state_highlight {*/
-/*    background: rgb(47, 125, 227);*/
-/*}*/
-
-/*.char-edit {*/
-/*    !*--textarea-bg-color: rgb(52, 52, 55);*!*/
-/*    !*--textarea-scrollbar-color: rgb(96, 96, 96);*!*/
-/*    !*--textarea-scrollbar-hover-color: rgb(128, 128, 128);*!*/
-/*    !*--textarea-scrollbar-active-color: rgb(160, 160, 160);*!*/
-/*    !*--textarea-scrollbar-track-hover-color: rgb(64, 64, 64);*!*/
-/*    max-height: calc(100vh - 100px);*/
-/*    max-width: calc(100vw - 40px);*/
-/*    height: 1500px;*/
-/*    width: 300px;*/
-/*    resize: none;*/
-/*    color: white !important;*/
-/*    font-size: .875rem !important;*/
-/*}*/
-
-
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    white-space: nowrap;
 }
 
 html {
@@ -304,18 +29,6 @@ body {
     gap: 8px;
 }
 
-/*.left-section {*/
-/*    width: 320px;*/
-/*    height: 100%;*/
-/*    margin-right: 8px;*/
-/*    display: flex;*/
-/*    flex-direction: column;*/
-/*}*/
-
-/*.right-section {*/
-/*    flex-grow: 1;*/
-/*    height: 100%;*/
-/*}*/
 .left-section, .right-section {
     display: flex;
     flex-direction: column;
@@ -404,16 +117,36 @@ body {
     text-overflow: clip !important;
 }
 
-/*.eft-grid-header-tooltip {*/
-/*    color: white;*/
-/*    background-color: rgba(0, 0, 0, 0.75);*/
-/*    font-size: 13px;*/
-/*    text-align: center;*/
-/*    box-sizing: border-box;*/
-/*    border-radius: 4px;*/
-/*    border: rgba(33, 150, 243, 0.75) solid 1px;*/
-/*    padding: 4px;*/
-/*}*/
+/* 强制所有单元格内容完全显示 */
+.ag-cell, .ag-header-cell {
+    overflow: visible !important;
+    white-space: normal !important;
+    text-overflow: clip !important;
+}
+
+.editable-cell {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #666;
+    border-radius: 4px;
+    padding: 0 8px;
+}
+
+/* 左侧：对齐左边 */
+.header-merged-left .ag-header-cell-comp-wrapper,
+.header-merged-left .ag-cell-label-container,
+.header-merged-left .ag-header-cell-label {
+    padding-left: 3px;
+    overflow: visible;
+    justify-content: left;
+}
+
+/* 右侧：隐藏这个标题（模拟合并） */
+.header-merged-right .ag-header-cell-label {
+    opacity: 0;
+}
 
 .min-w-80 {
     min-width: 80px;

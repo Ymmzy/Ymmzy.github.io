@@ -31,3 +31,50 @@ export default class Equipment {
         this.passiveList = passiveList;
     }
 }
+
+Equipment.getSaveData = () => {
+    console.log("====== Save Equipments ======");
+    return EQUIPMENT_DATA.flatMap(equipment => {
+        let data = {};
+        if (equipment.active?.rateChanged) data.active = equipment.active.rate;
+        if (equipment.passiveList[0]?.rateChanged) (data.passiveList ??= [])[0] = equipment.passiveList[0].rate;
+        if (equipment.passiveList[1]?.rateChanged) (data.passiveList ??= [])[1] = equipment.passiveList[1].rate;
+        if (Object.keys(data).length === 0) {
+            return [];
+        } else {
+            return {
+                name: equipment.name,
+                ...data
+            }
+        }
+    });
+}
+
+Equipment.setSaveData = (saveData) => {
+    console.log("====== Load Equipments ======");
+    console.log(saveData);
+
+    const restoreRate = skill => {
+        skill.rate = skill.oldRate;
+        skill.rateChanged = false;
+    }
+
+    const changeRate = (skill, newRate) => {
+        skill.oldRate = skill.rate;
+        skill.rate = newRate;
+        skill.rateChanged = true;
+    }
+
+    EQUIPMENT_DATA.forEach(equipment => {
+        if (equipment.active?.rateChanged) restoreRate(equipment.active);
+        if (equipment.passiveList[0]?.rateChanged) restoreRate(equipment.passiveList[0]);
+        if (equipment.passiveList[1]?.rateChanged) restoreRate(equipment.passiveList[1]);
+    })
+
+    saveData.forEach(data => {
+        let equipment = EQUIPMENT_DATA.find(equipment => equipment.name === data.name);
+        if (data.active) changeRate(equipment.active, data.active);
+        if (data.passiveList?.[0]) changeRate(equipment.passiveList[0], data.passiveList[0]);
+        if (data.passiveList?.[1]) changeRate(equipment.passiveList[1], data.passiveList[1]);
+    })
+}

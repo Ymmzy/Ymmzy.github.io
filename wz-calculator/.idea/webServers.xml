@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="024e32fd-0249-497a-8dc3-efa129aa200b" name="wz-calculator" url="http://192.168.6.158:8888">
+        <fileTransfer mountedRoot="D:\ymmzy.github.io" accessType="MOUNT" port="0" />
+      </webServer>
+    </option>
+  </component>
+</project>

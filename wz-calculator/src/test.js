@@ -1,5 +1,6 @@
 import Hero from "./game/Hero.js"
 import {HERO_DATA, ENEMY_DATA, EQUIPMENT_DATA, RUNE_DATA, RUNE_COLOR} from "./game/Data.js"
+import Equipment from "./game/Equipment.js";
 
 let hero = null;
 let updates = null;
@@ -18,30 +19,36 @@ function init() {
 
 function initData() {
     hero = new Hero(HERO_DATA[0]);
-    window.hero = hero;
-    window.equipmentData = EQUIPMENT_DATA;
-    window.runeData = RUNE_DATA;
     hero.setEnemy(
         [new Hero(ENEMY_DATA.enemyDPS_1), new Hero(ENEMY_DATA.enemyDPS_2)],
         [new Hero(ENEMY_DATA.enemyEHP_1), new Hero(ENEMY_DATA.enemyEHP_2)]
     );
     // hero.addEquipment("影刃");
     // hero.addEquipment("无尽战刃");
-    hero.addEquipment("仁者破晓");
+    // hero.addEquipment("仁者破晓");
     // hero.addEquipment("闪电匕首");
-    hero.addEquipment("末世");
-    hero.addRune("祸源", 5);
-    hero.addRune("宿命", 3);
-    hero.addRune("鹰眼", 6);
-    hero.addRune("虚空", 1);
-    hero.addRune("夺萃", 5);
-    hero.addRune("狩猎", 2);
+    // hero.addEquipment("末世");
+    // hero.addRune("祸源", 5);
+    // hero.addRune("宿命", 3);
+    // hero.addRune("鹰眼", 6);
+    // hero.addRune("虚空", 1);
+    // hero.addRune("夺萃", 5);
+    // hero.addRune("狩猎", 2);
     // hero.addRune("狩猎", 20);
+    let saveData = JSON.parse(localStorage.getItem('saveData'));
+    if (saveData) {
+        Equipment.setSaveData(saveData.equipments);
+        hero.setSaveData(saveData.hero);
+    }
     hero.updateDelta(RUNE_DATA, EQUIPMENT_DATA);
+
+    window.hero = hero;
+    window.equipmentData = EQUIPMENT_DATA;
+    window.runeData = RUNE_DATA;
 }
 
 function initButton() {
-    function getButton(label, onclick) {
+    const getButton = (label, onclick) => {
         const btn = document.createElement("button");
         btn.classList.add("btn");
         btn.innerText = label;
@@ -49,24 +56,26 @@ function initButton() {
         return btn;
     }
 
-    const btnCon = document.querySelector("#buttonContainer");
-    btnCon.appendChild(getButton("编辑", event => {
-        const json = JSON.stringify(proto.jyf.Character.saveCharacter(mainCharacter.final), null, '\t');
+    const btnContainer = document.querySelector("#buttonContainer");
+    btnContainer.appendChild(getButton("编辑", event => {
+        const json = JSON.stringify({
+            hero: hero.getSaveData(),
+            equipments: Equipment.getSaveData()
+        },null, '\t');
         const textarea = document.createElement("textarea");
         textarea.value = json;
         textarea.classList.add("ag-theme-alpine-dark");
         textarea.classList.add("char-edit");
-        const dialog = art.dialog({
+        art.dialog({
             content: textarea,
             padding: '8px 8px 0 8px',
             ok: () => {
-                let ok = false;
-                proto.jyf.Character.loadCharacter(JSON.parse(textarea.value), char => {
-                    //mainCharacter = char;
-                    main(mainCharacter);
-                    ok = true;
-                });
-                return ok;
+                let data = JSON.parse(textarea.value);
+                Equipment.setSaveData(data.equipments);
+                hero.setSaveData(data.hero);
+                hero.updateDelta(RUNE_DATA, EQUIPMENT_DATA);
+                updates.forEach(update => update());
+                return true;
             },
             cancel: true,
             lock: true,
@@ -76,12 +85,14 @@ function initButton() {
             duration: 100,
         });
     }));
-    btnCon.appendChild(getButton("导入", () => {
+    btnContainer.appendChild(getButton("导入", () => {
     }));
-    btnCon.appendChild(getButton("导出", () => {
+    btnContainer.appendChild(getButton("导出", () => {
     }));
-    btnCon.appendChild(getButton("暂存", () => {
-    }));
+    btnContainer.appendChild(getButton("暂存", () => localStorage.setItem('saveData', JSON.stringify({
+        hero: hero.getSaveData(),
+        equipments: Equipment.getSaveData()
+    }))));
 }
 
 function initHeroGrid() {
@@ -110,22 +121,26 @@ function initHeroGrid() {
         physicalPenetration: "物穿",
         physicalPenetrationPercent: "物穿%",
 
-        magicAttack: "法攻",
-        magicLifesteal: "法吸",
-        magicPenetration: "法穿",
-        magicPenetrationPercent: "法穿%",
+        // magicAttack: "法攻",
+        // magicLifesteal: "法吸",
+        // magicPenetration: "法穿",
+        // magicPenetrationPercent: "法穿%",
 
         // 战斗属性
         criticalRate: "暴击",
         criticalDamage: "暴伤",
         attackSpeed: "攻速",
+        attackTime: "间隔",
+        cooldownReduction: "冷却",
         attackRange: "范围",
 
         // 特殊属性
-        cooldownReduction: "冷却",
         precision: "精准",
         damageIncreased: "增伤",
         damageReduction: "免伤",
+        physicalDamageReduction: "物免",
+        healIncreased: "增疗"
+
     };
 
     const getSubRowData = () => {
@@ -169,9 +184,10 @@ function initHeroGrid() {
                 enableCellChangeFlash: true,
                 cellDataType: 'text',
                 valueFormatter: params => {
+                    if (params.data.key === "attackTime") return params.value.toFixed(3);
                     if (typeof params.value !== 'number') return params.value;
                     if (params.value === 0) return "";
-                    return params.value < 3 ? `${(params.value * 100).toFixed(0)}%` : params.value.toFixed(0);
+                    return params.value < 3 ? `${Math.floor(params.value * 100)}%` : Math.floor(params.value);
                 }
             }
         ],
@@ -209,6 +225,7 @@ function initEquipmentGrid() {
         defaultColDef: {
             menuTabs: [],
             enableCellChangeFlash: true,
+            suppressMovable: true,
             flex: 1
         },
         columnDefs: [
@@ -234,18 +251,31 @@ function initEquipmentGrid() {
 
 function initRuneGrid() {
     const GRID_ID = "#runeGrid";
-    const getRowData = () => hero.getRunes();
+    const getRowData = () => {
+        let runes = hero.getRunes();
+        runes.forEach(rune => rune.clear = "清空");
+        return runes;
+    }
 
     const gridOptions = {
         defaultColDef: {
             menuTabs: [],
             enableCellChangeFlash: true,
+            suppressMovable: true,
             flex: 1
         },
         columnDefs: [
-            {headerName: "颜色", field: "color"},
-            {headerName: "名称", field: "name", flex: 1.6},
-            {headerName: "数量", field: "count",filter: 'agNumberColumnFilter'}
+            {headerName: "颜色", field: "color", flex: 0.6},
+            {headerName: "名称", field: "name"},
+            {headerName: "数量", field: "count",filter: 'agNumberColumnFilter'},
+            {
+                headerName: "操作",
+                field: "clear",
+                flex: 0.6,
+                cellRenderer: params => {
+                    return `<button>清空</button>`;
+                }
+            }
         ],
         rowClassRules: {
             'bg-add bg-red': params => params.data.color === RUNE_COLOR.red,
@@ -255,8 +285,12 @@ function initRuneGrid() {
         rowData: getRowData(),
         // isRowFiltered : node => node.data.count === 0,
         getRowId: params => params.data.name,
-        onRowClicked: params => {
-            hero.removeRune(params.data.name);
+        onCellClicked: params => {
+            if (params.colDef.field === "clear") {
+                hero.removeRune(params.data.name, 10);
+            } else {
+                hero.removeRune(params.data.name);
+            }
             hero.updateDelta(RUNE_DATA, EQUIPMENT_DATA);
             updates.forEach(update => update());
         }
@@ -283,7 +317,7 @@ function initShopGrid() {
         maxHP: "生命",
         physicalDefense: "物防",
         magicDefense: "法防",
-        moveSpeed: "移速",
+        moveSpeedIncreased: "移速",
 
         physicalAttack: "物攻",
         criticalRate: "暴击",
@@ -320,7 +354,8 @@ function initShopGrid() {
             sortingOrder: ['desc', 'asc'],
             menuTabs: [],
             enableCellChangeFlash: true,
-            minWidth: 60,
+            suppressMovable: true,
+            minWidth: 55,
             flex: 1
         },
         columnDefs: [
@@ -331,15 +366,9 @@ function initShopGrid() {
                 pinned: 'left'
             },
             {
-                headerName: "类型",
-                field: "type",
-                width: 60,
-                pinned: 'left'
-            },
-            {
                 headerName: "△CP",
                 field: "deltaCP",
-                width: 60,
+                width: 55,
                 pinned: 'left',
                 valueFormatter: params => params.value.toFixed(0),
                 cellClass: 'bg-add bg-purple'
@@ -348,7 +377,7 @@ function initShopGrid() {
                 headerName: "△DPS",
                 field: "deltaDPS",
                 width: 60,
-                pinned: 'left',
+                flex: 0,
                 valueFormatter: params => params.value.toFixed(0),
                 cellClass: 'bg-add bg-red'
             },
@@ -356,26 +385,97 @@ function initShopGrid() {
                 headerName: "△EHP",
                 field: "deltaEHP",
                 width: 60,
-                pinned: 'left',
+                flex: 0,
                 valueFormatter: params => params.value.toFixed(0),
                 cellClass: 'bg-add bg-blue'
             },
+            {
+                headerName: "应用 ⏵ 被动1",
+                field: "passiveRate_1",
+                maxWidth: 55,
+                headerClass: 'header-merged-left',
+                editable: params => params.data[params.colDef.field] !== null,
+                cellStyle: {padding: '2px'},
+                cellRenderer: params => params.value === null ? '' : `<div class="editable-cell">${params.value}</div>`
+            },
+            {
+                headerName: "被动1",
+                field: "passive_1",
+                minWidth: 84,
+                headerClass: 'header-merged-right'
+            },
+            {
+                headerName: "应用 ⏵ 被动2",
+                field: "passiveRate_2",
+                maxWidth: 55,
+                headerClass: 'header-merged-left',
+                editable: params => params.data[params.colDef.field] !== null,
+                cellStyle: {padding: '2px'},
+                cellRenderer: params => params.value === null ? '' : `<div class="editable-cell">${params.value}</div>`
+            },
+            {
+                headerName: "被动2",
+                field: "passive_2",
+                minWidth: 84,
+                headerClass: 'header-merged-right'
+            },
+            {
+                headerName: "应用 ⏵ 主动",
+                field: "activeRate",
+                maxWidth: 55,
+                headerClass: 'header-merged-left',
+                editable: params => params.data[params.colDef.field] !== null,
+                cellStyle: {padding: '2px'},
+                cellRenderer: params => params.value === null ? '' : `<div class="editable-cell">${params.value}</div>`
+            },
+            {
+                headerName: "主动",
+                field: "active",
+                minWidth: 84,
+                headerClass: 'header-merged-right'
+            },
             ...Object.keys(STAT_KEYS_1).map(key => ({headerName: STAT_KEYS_1[key], field: key})),
-            {headerName: "被动1", field: "passive_1", minWidth: 84, flex: 2},
-            {headerName: "应用", field: "passiveRate_1"},
-            {headerName: "被动2", field: "passive_2", minWidth: 84, flex: 2},
-            {headerName: "应用", field: "passiveRate_2"},
-            {headerName: "主动", field: "active", minWidth: 84, flex: 2},
-            {headerName: "应用", field: "activeRate"},
             ...Object.keys(STAT_KEYS_2).map(key => ({headerName: STAT_KEYS_2[key], field: key})),
         ],
         rowData: getRowData(),
         getRowId: params => params.data.name,
-        onRowClicked: params => {
+        onCellClicked: params => {
+            if (params.colDef.field.includes("Rate") && params.value !== null) return;
             hero.addEquipment(params.data.name);
             hero.updateDelta(RUNE_DATA, EQUIPMENT_DATA);
             updates.forEach(update => update());
-        }
+        },
+        onCellValueChanged: params => {
+            const applyRate = (skill, newRate) => {
+                let changed = false;
+                if (skill) {
+                    changed = true;
+                    if (skill.rateChanged) {
+                        skill.rate = newRate;
+                        if (newRate === skill.oldRate) skill.rateChanged = false;
+                    } else {
+                        skill.oldRate = skill.rate;
+                        skill.rate = newRate;
+                        skill.rateChanged = true;
+                    }
+                }
+                return changed;
+            }
+
+            const equipment = EQUIPMENT_DATA.find(e => e.name === params.data.name);
+            const rateMap = {
+                passiveRate_1: equipment.passiveList[0],
+                passiveRate_2: equipment.passiveList[1],
+                activeRate: equipment.active
+            };
+            if (applyRate(rateMap[params.colDef.field], Number(params.value))) {
+                hero.updateStats();
+                hero.updateDelta(RUNE_DATA, EQUIPMENT_DATA);
+                updates.forEach(update => update());
+            }
+        },
+        singleClickEdit: true,
+        stopEditingWhenCellsLoseFocus: true
     }
 
     const element = document.querySelector(GRID_ID);
@@ -397,7 +497,7 @@ function initRuneShopGrid() {
         physicalDefense: "物防",
         magicDefense: "法防",
         attackSpeed: "攻速",
-        moveSpeed: "移速",
+        moveSpeedIncreased: "移速",
         physicalAttack: "物攻",
         physicalPenetration: "物穿",
         physicalLifesteal: "物吸",
@@ -416,6 +516,7 @@ function initRuneShopGrid() {
             deltaCP: rune.delta.CP,
             deltaDPS: rune.delta.DPS,
             deltaEHP: rune.delta.EHP,
+            max: "最大",
             ...rune.stats
         }));
     };
@@ -426,7 +527,8 @@ function initRuneShopGrid() {
             sortingOrder: ['desc', 'asc'],
             menuTabs: [],
             enableCellChangeFlash: true,
-            minWidth: 60,
+            suppressMovable: true,
+            minWidth: 55,
             flex: 1
         },
         columnDefs: [
@@ -434,18 +536,17 @@ function initRuneShopGrid() {
                 headerName: "名称",
                 field: "name",
                 width: 80,
-                pinned: 'left'
-            },
-            {
-                headerName: "颜色",
-                field: "color",
-                width: 60,
-                pinned: 'left'
+                pinned: 'left',
+                cellRenderer: params => {
+                    const name = params.value;
+                    const color = Object.keys(RUNE_COLOR).find(key => RUNE_COLOR[key] === params.data.color); // 取当前行的颜色值
+                    return `${name} <span style="color: ${color}; opacity: 0.8; font-weight: bold;">■</span>`;
+                }
             },
             {
                 headerName: "△CP",
                 field: "deltaCP",
-                width: 60,
+                width: 55,
                 pinned: 'left',
                 valueFormatter: params => params.value.toFixed(0),
                 cellClass: 'bg-add bg-purple'
@@ -454,7 +555,7 @@ function initRuneShopGrid() {
                 headerName: "△DPS",
                 field: "deltaDPS",
                 width: 60,
-                pinned: 'left',
+                flex: 0,
                 valueFormatter: params => params.value.toFixed(0),
                 cellClass: 'bg-add bg-red'
             },
@@ -462,16 +563,29 @@ function initRuneShopGrid() {
                 headerName: "△EHP",
                 field: "deltaEHP",
                 width: 60,
-                pinned: 'left',
+                flex: 0,
                 valueFormatter: params => params.value.toFixed(0),
                 cellClass: 'bg-add bg-blue'
+            },
+            {
+                headerName: "操作",
+                field: "max",
+                width: 60,
+                flex: 0,
+                cellRenderer: params => {
+                    return `<button>最大</button>`;
+                }
             },
             ...Object.keys(STAT_KEYS).map(key => ({headerName: STAT_KEYS[key], field: key}))
         ],
         rowData: getRowData(),
         getRowId: params => params.data.name,
-        onRowClicked: params => {
-            hero.addRune(params.data.name);
+        onCellClicked: params => {
+            if (params.colDef.field === "max") {
+                hero.addRune(params.data.name, 10);
+            } else {
+                hero.addRune(params.data.name);
+            }
             hero.updateDelta(RUNE_DATA, EQUIPMENT_DATA);
             updates.forEach(update => update());
         }

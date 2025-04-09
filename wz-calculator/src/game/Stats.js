@@ -3,45 +3,12 @@ import {STAT} from "./Data.js";
 export default class Stats {
     constructor(stats = {}) {
         const finalStats = {
-            // 基础属性
-            [STAT.maxHP]: 0,
-            [STAT.maxMP]: 0,
-            [STAT.moveSpeed]: 0,
-
-            // 物理相关
-            [STAT.physicalAttack]: 0,
-            [STAT.physicalDefense]: 0,
-            [STAT.physicalPenetration]: 0,
-            [STAT.physicalPenetrationPercent]: 0,
-            [STAT.physicalLifesteal]: 0,
-
-            // 法术相关
-            [STAT.magicAttack]: 0,
-            [STAT.magicDefense]: 0,
-            [STAT.magicPenetration]: 0,
-            [STAT.magicPenetrationPercent]: 0,
-            [STAT.magicLifesteal]: 0,
-
-            // 战斗属性
-            [STAT.attackRange]: '近程',
-            [STAT.criticalRate]: 0,
-            [STAT.criticalDamage]: 0,
-            [STAT.attackSpeed]: 0,
-
-            // 恢复属性
-            [STAT.hpRegen]: 0,
-            [STAT.mpRegen]: 0,
-
-            // 特殊属性
-            [STAT.cooldownReduction]: 0,
-            [STAT.tenacity]: 0,
-            [STAT.precision]: 0,
-            [STAT.damageIncreased]: 0,
-            [STAT.damageReduction]: 0,
-
-            // 用传入的 stats 覆盖默认值
+            ...Object.fromEntries(
+                Object.values(STAT).filter(stat => typeof stat === 'string').map(stat => [stat, 0])
+            ),
             ...stats,
         }
+        finalStats[STAT.attackRange] = STAT.ATTACK_RANGE.melee;
 
         Object.assign(this, finalStats);
     }

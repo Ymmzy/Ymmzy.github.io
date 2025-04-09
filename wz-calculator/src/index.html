@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>wz-calculator</title>
     <link rel="stylesheet" href="lib/ag-grid.min.css"/>
     <link rel="stylesheet" href="lib/ag-theme-alpine.min.css"/>
     <link rel="stylesheet" href="lib/artDialog/skins/simple.css"/>
@@ -26,6 +27,47 @@
         <div id="runeShopGrid" class="component ag-grid-container ag-theme-alpine-dark"></div>
     </div>
 </div>
+<script>
+    // disable pull to refresh
+    let lastY = 0;
+    window.addEventListener('touchmove', function (e) {
+        let scrollY = window.pageYOffset || window.scrollTop || 0;
+        let direction = e.changedTouches[0].pageY > lastY ? 1 : -1;
+        if (direction > 0 && scrollY === 0) {
+            e.preventDefault();
+        }
+        lastY = e.changedTouches[0].pageY;
+    }, {passive: false});
+</script>
+<script>
+    let isMobileLayout = false;
+
+    function handleGridReorder() {
+        const runeGrid = document.getElementById('runeGrid');
+        const shopGrid = document.getElementById('shopGrid');
+        const runeShopGrid = document.getElementById('runeShopGrid');
+        const leftSection = document.querySelector('.left-section');
+        const rightSection = document.querySelector('.right-section');
+
+        const shouldBeMobile = window.innerWidth <= 400;
+
+        if (shouldBeMobile && !isMobileLayout) {
+            // 切换到移动端布局
+            rightSection.insertBefore(runeGrid, runeShopGrid);
+            leftSection.appendChild(shopGrid);
+            isMobileLayout = true;
+        } else if (!shouldBeMobile && isMobileLayout) {
+            // 恢复到桌面端布局
+            leftSection.appendChild(runeGrid);
+            rightSection.insertBefore(shopGrid, runeShopGrid);
+            isMobileLayout = false;
+        }
+    }
+
+    // 初始化 + 监听
+    handleGridReorder();
+    window.addEventListener('resize', handleGridReorder);
+</script>
 <script type="module" src="test.js"></script>
 </body>
 </html>
