@@ -1,5 +1,5 @@
 import Stats from "./Stats.js"
-import {DAMAGE_TYPE, EQUIPMENT_DATA, SKILL_TAG, RUNE_DATA, STAT, TRIGGER} from "./Data.js";
+import {DAMAGE_TYPE, EQUIPMENT_DATA, SKILL_TAG, RUNE_DATA, STAT, TRIGGER, HERO_DATA} from "./Data.js";
 
 export default class Hero {
     constructor({name, initialStats, growthStats, skinStats, bonusStats = {}, battleTime = {}, attackSpeedModel, skills = [], exportFileName = null}, update = true) {
@@ -344,7 +344,7 @@ export default class Hero {
         console.log(saveData);
 
         this.setLevel(saveData.level || 15);
-        this.bonusStats = saveData.bonusStats;
+        this.bonusStats = {...HERO_DATA.find(heroData => heroData.name === this.name).bonusStats, ...saveData.bonusStats};
         this.equipments = [];
         saveData.equipments.forEach(equipment => this.addEquipment(equipment, false));
         this.runes = [];
