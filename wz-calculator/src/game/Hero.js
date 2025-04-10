@@ -33,7 +33,7 @@ export default class Hero {
     }
 
     setLevel(level) {
-        this.level = Math.max(15, level);
+        this.level = Math.min(15, level);
         [...this.enemiesDPS, ...this.enemiesEHP].forEach(enemy => enemy.setLevel(this.level));
         this.updateStats();
     }
@@ -286,6 +286,7 @@ export default class Hero {
         ehp /= enemy.damageMultiplier(this, type);
         ehp /= 1 - this.getStat(STAT.damageReduction);
         if (type === DAMAGE_TYPE.physical) ehp /= 1 - this.getStat(STAT.physicalDamageReduction);
+        ehp *= 1 + (this.totalStats.moveSpeed - 450) / 450 * this.bonusStats.moveSpeedToEHP;
 
         return ehp;
     }
@@ -323,6 +324,7 @@ export default class Hero {
     getSaveData() {
         console.log("====== Save Hero ======");
         return {
+            level: this.level,
             bonusStats: this.bonusStats,
             equipments:this.equipments.map(equipment => equipment.name),
             runes: this.getRunes().filter(rune => rune.count > 0).map(rune => ({
@@ -341,6 +343,7 @@ export default class Hero {
         console.log("====== Load Hero ======");
         console.log(saveData);
 
+        this.setLevel(saveData.level || 15);
         this.bonusStats = saveData.bonusStats;
         this.equipments = [];
         saveData.equipments.forEach(equipment => this.addEquipment(equipment, false));

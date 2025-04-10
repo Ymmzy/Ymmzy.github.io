@@ -149,7 +149,8 @@ const HERO_DATA = [
                 key: "放生",
                 value: "山猕"
             },
-            cooldownReductionToDPS: 0.5
+            cooldownReductionToDPS: 0.5,
+            moveSpeedToEHP: 0.5
         },
         battleTime: {
             total: 5,

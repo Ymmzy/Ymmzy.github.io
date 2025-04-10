@@ -23,10 +23,14 @@ function initData() {
         [new Hero(ENEMY_DATA.enemyDPS_1, false), new Hero(ENEMY_DATA.enemyDPS_2, false)],
         [new Hero(ENEMY_DATA.enemyEHP_1, false), new Hero(ENEMY_DATA.enemyEHP_2, false)]
     );
-    let saveData = JSON.parse(localStorage.getItem('saveData'));
-    if (saveData) {
-        Equipment.setSaveData(saveData.equipmentData);
-        hero.setSaveData(saveData.hero);
+    try {
+        let saveData = JSON.parse(localStorage.getItem('saveData'));
+        if (saveData) {
+            Equipment.setSaveData(saveData.equipmentData);
+            hero.setSaveData(saveData.hero);
+        }
+    } catch (error) {
+        console.warn(error);
     }
     hero.updateDelta(RUNE_DATA, EQUIPMENT_DATA);
 
