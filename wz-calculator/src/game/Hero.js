@@ -2,14 +2,16 @@ import Stats from "./Stats.js"
 import {DAMAGE_TYPE, EQUIPMENT_DATA, SKILL_TAG, RUNE_DATA, STAT, TRIGGER} from "./Data.js";
 
 export default class Hero {
-    constructor({name, initialStats, growthStats, skinStats, bonusStats = {}, attackSpeedModel, skills = []}, update = true) {
+    constructor({name, initialStats, growthStats, skinStats, bonusStats = {}, battleTime = {}, attackSpeedModel, skills = [], exportFileName = null}, update = true) {
         this.name = name;
         this.initialStats = new Stats(initialStats);
         this.growthStats = new Stats(growthStats);
         this.skinStats = new Stats(skinStats);
         this.bonusStats = bonusStats;
+        this.battleTime = battleTime;
         this.attackSpeedModel = attackSpeedModel;
         this.skills = skills;
+        this.exportFileName = exportFileName;
 
         this.level = 15;
         this.equipments = [];
@@ -32,12 +34,16 @@ export default class Hero {
 
     setLevel(level) {
         this.level = Math.max(15, level);
-        this.enemiesDPS.forEach(enemy => enemy.setLevel(this.level));
-        this.enemiesEHP.forEach(enemy => enemy.setLevel(this.level));
+        [...this.enemiesDPS, ...this.enemiesEHP].forEach(enemy => enemy.setLevel(this.level));
         this.updateStats();
     }
 
     setEnemy(enemiesDPS, enemiesEHP) {
+        [...enemiesDPS,...enemiesEHP].forEach(enemy => {
+            enemy.bonusStats.equipments.forEach(equipment => enemy.addEquipment(equipment, false));
+            enemy.bonusStats.runes.forEach(rune => enemy.addRune(rune[0], rune[1], false));
+            enemy.updateStats();
+        });
         this.enemiesDPS = enemiesDPS;
         this.enemiesEHP = enemiesEHP;
         this.updateStats();
@@ -132,6 +138,25 @@ export default class Hero {
         return result;
     }
 
+    mergeStats() {
+        const calcMoveSpeed = (moveSpeed) => {
+            if (moveSpeed <= 500) {
+                // 500及以下的部分不缩放
+                return  moveSpeed;
+            } else if (moveSpeed <= 575) {
+                // 500-575之间的部分缩放0.8
+                return  500 + (moveSpeed - 500) * 0.8;
+            } else {
+                // 500-575部分缩放0.8，575以上部分缩放0.5
+                return  500 + (575 - 500) * 0.8 + (moveSpeed - 575) * 0.5;
+            }
+        }
+
+        this.totalStats = this.baseStats.clone().add(this.extraStats);
+        this.totalStats.moveSpeed = calcMoveSpeed(this.totalStats.moveSpeedBase * (1 + this.totalStats.moveSpeedIncreased));
+        this.totalStats.attackTime = this.attackSpeedModel?.calculateAttackTime(this.getStat(STAT.attackSpeed) * 100);
+    }
+
     // 更新属性
     updateStats() {
         this.baseStats = this.initialStats.clone();
@@ -169,40 +194,51 @@ export default class Hero {
                 }
             });
         });
+        this.mergeStats();
 
         // 计算英雄技能加成
-        this.totalStats = this.baseStats.clone().add(this.extraStats);
         this.skills.forEach(skill => {
             if (skill.trigger.includes(TRIGGER.auto)) {
                 skill.effect(this, skill.rate);
             }
         });
+        this.mergeStats();
 
         // 计算主动加成
-        this.totalStats = this.baseStats.clone().add(this.extraStats);
         if (this.active) {
             this.active.effect(this, this.active.rate);
         }
+        this.mergeStats();
 
         // 计算属性被动加成
-        this.totalStats = this.baseStats.clone().add(this.extraStats);
         this.passiveList.forEach(passive => {
             if (passive.trigger.includes(TRIGGER.auto)) {
                 passive.effect(this, passive.rate);
             }
         });
+        this.mergeStats();
 
-        this.totalStats = this.baseStats.clone().add(this.extraStats);
-        this.totalStats.moveSpeed = this.totalStats.moveSpeedBase * (1 + this.totalStats.moveSpeedIncreased);
-
+        // 计算输出
         this.enemiesDPS.forEach((enemy, i) => {
             this.DPS[i] = this.calculateDPS(enemy);
             this.DPS.average += enemy.bonusStats.rate * this.DPS[i];
         });
+
+        // 计算普攻吸血
+        this.healList[this.name].push({
+            source: "普攻吸血",
+            value: this.totalStats.lifestealByNormalAttack * this.battleTime.normalAttack,
+            cooldown: this.battleTime.normalAttack,
+            rate: 1
+        });
+
+        // 计算等效血量
         this.enemiesEHP.forEach((enemy, i) => {
             this.EHP[i] = this.calculateEHP(enemy);
             this.EHP.average += enemy.bonusStats.rate * this.EHP[i];
         });
+
+        //计算综合战斗力
         this.CP = this.DPS.average * this.EHP.average / 5000;
     }
 
@@ -212,16 +248,27 @@ export default class Hero {
         this.damageCDList[enemy.name] = [...this.damageCDList[this.name]];
 
         this.skills.filter(skill => skill.tags.includes(SKILL_TAG.damage)).forEach(skill => skill.effect(this, enemy, skill.rate));
-        this.passiveList.filter(passive => passive.trigger.includes(TRIGGER.normal) || passive.trigger.includes(TRIGGER.skill)).forEach(passive => passive.effect(this, enemy, passive.rate));
+        this.passiveList.filter(passive => passive.trigger.includes(TRIGGER.normalAttack) || passive.trigger.includes(TRIGGER.skill)).forEach(passive => passive.effect(this, enemy, passive.rate));
 
-        this.totalStats.attackTime = this.attackSpeedModel.calculateAttackTime(this.getStat(STAT.attackSpeed) * 100);
         let multiplier = {
             [DAMAGE_TYPE.physical]: this.damageMultiplier(enemy, DAMAGE_TYPE.physical),
             [DAMAGE_TYPE.magic]: this.damageMultiplier(enemy, DAMAGE_TYPE.magic),
         };
-        this.damageNAList[enemy.name].forEach(damage => dps += damage.value * damage.rate * multiplier[damage.type] / this.totalStats.attackTime);
+        this.damageNAList[enemy.name].forEach(damage => {
+            let damagePerSecond = damage.value * damage.rate * multiplier[damage.type] / this.totalStats.attackTime;
+            dps += damagePerSecond;
+            if (damage.source === "普通攻击") {
+                this.totalStats.lifestealByNormalAttack ??= 0;
+                this.totalStats.lifestealByNormalAttack += damagePerSecond * (
+                    damage.type === DAMAGE_TYPE.physical
+                        ? this.getStat(STAT.physicalLifesteal)
+                        : this.getStat(STAT.magicLifesteal)
+                ) * enemy.bonusStats.rate;
+            }
+        });
         this.damageCDList[enemy.name].forEach(damage => dps += damage.value * damage.rate * multiplier[damage.type] / damage.cooldown);
         dps *= 1 + this.getStat(STAT.damageIncreased);
+        dps *= 1 + this.getStat(STAT.cooldownReduction) * this.bonusStats.cooldownReductionToDPS;
 
         return dps;
     }
@@ -281,7 +328,12 @@ export default class Hero {
             runes: this.getRunes().filter(rune => rune.count > 0).map(rune => ({
                 name: rune.name,
                 count: rune.count
-            }))
+            })),
+            enemyRate: {
+                dps: Object.fromEntries(this.enemiesDPS.map(enemy => [enemy.name, enemy.bonusStats.rate])),
+                ehp: Object.fromEntries(this.enemiesEHP.map(enemy => [enemy.name, enemy.bonusStats.rate])),
+            },
+            battleTime: this.battleTime
         };
     }
 
@@ -294,6 +346,9 @@ export default class Hero {
         saveData.equipments.forEach(equipment => this.addEquipment(equipment, false));
         this.runes = [];
         saveData.runes.forEach(rune => this.addRune(rune.name, rune.count, false));
+        Object.keys(saveData.enemyRate.dps).map(name => this.enemiesDPS.find(enemy => enemy.name === name).bonusStats.rate = saveData.enemyRate.dps[name]);
+        Object.keys(saveData.enemyRate.ehp).map(name => this.enemiesEHP.find(enemy => enemy.name === name).bonusStats.rate = saveData.enemyRate.ehp[name]);
+        this.battleTime = saveData.battleTime;
         this.updateStats();
     }
 

@@ -63,7 +63,7 @@ const SKILL_TAG = {
     cooldownReduction: "冷却"
 }
 const TRIGGER = {
-    normal: "普攻",
+    normalAttack: "普攻",
     skill: "技能",
     defend: "受击",
     auto: "自动"
@@ -120,7 +120,7 @@ const HERO_DATA = [
 
             magicDefense: 75,
 
-            attackRange: '远程',
+            attackRange: STAT.ATTACK_RANGE.ranged,
             criticalDamage: 1.85,
             attackSpeed: 0.1,
 
@@ -148,14 +148,19 @@ const HERO_DATA = [
             release: {
                 key: "放生",
                 value: "山猕"
-            }
+            },
+            cooldownReductionToDPS: 0.5
+        },
+        battleTime: {
+            total: 5,
+            normalAttack: 3
         },
         attackSpeedModel: ATTACK_SPEED_MODEL.A,
         skills: [
             {
                 name: "普通攻击",
                 tags: [SKILL_TAG.damage],
-                trigger: [TRIGGER.normal],
+                trigger: [TRIGGER.normalAttack],
                 effect: (attacker, defender, rate) => EFFECT.damageNA(
                     attacker,
                     defender,
@@ -216,7 +221,7 @@ const HERO_DATA = [
                         holder.passiveList.push({
                             name: "放生: 蔚蓝石像",
                             tags: [SKILL_TAG.damage],
-                            trigger: [TRIGGER.normal],
+                            trigger: [TRIGGER.normalAttack],
                             effect: (attacker, defender, rate) => EFFECT.damageNA(
                                 attacker,
                                 defender,
@@ -232,8 +237,18 @@ const HERO_DATA = [
                     }
                 },
                 rate: 1
+            },
+            {
+                name: "一技能",
+                tags: [SKILL_TAG.attackSpeed],
+                trigger: [TRIGGER.auto],
+                effect: (holder, rate) => EFFECT.statAdd(holder, STAT.attackSpeed, 0.5, rate),
+                rate: 1
             }
-        ]
+        ],
+        exportFileName: function () {
+            return [this.name, this.bonusStats.release.value, this.CP.toFixed(0)].join("_")
+        }
     }
 ];
 const ENEMY_DATA = {
@@ -245,7 +260,7 @@ const ENEMY_DATA = {
             magicDefense: 75
         },
         growthStats: {
-            maxHP: 291.2,
+            maxHP: 307,
             physicalDefense: 20.5,
             magicDefense: 8.6
         },
@@ -253,7 +268,9 @@ const ENEMY_DATA = {
             maxHP: 120
         },
         bonusStats: {
-            rate: 0.5
+            rate: 0.5,
+            equipments: ["抵抗之靴", "红莲斗篷", "永夜守护", "反伤韧甲", "霸者重装", "不祥征兆"],
+            runes: [["宿命", 10], ["调和", 10], ["虚空", 10]]
         }
     },
     enemyDPS_2: {
@@ -269,21 +286,27 @@ const ENEMY_DATA = {
             magicDefense: 7.4
         },
         bonusStats: {
-            rate: 0.5
+            rate: 0.5,
+            equipments: ["泣血之刃"],
+            runes: []
         }
     },
     enemyEHP_1: {
         name: "物理输出",
         bonusStats: {
             damageType: DAMAGE_TYPE.physical,
-            rate: 0.6
+            rate: 0.6,
+            equipments: ["暗影战斧"],
+            runes: [["异变", 10], ["鹰眼", 10]]
         }
     },
     enemyEHP_2: {
         name: "法术输出",
         bonusStats: {
             damageType: DAMAGE_TYPE.magic,
-            rate: 0.4
+            rate: 0.4,
+            equipments: ["秘法之靴", "虚无法杖"],
+            runes: [["梦魇", 10], ["心眼", 10]]
         }
     }
 }
@@ -321,7 +344,7 @@ const EQUIPMENT_DATA = [
                 name: "破魔",
                 tags: [SKILL_TAG.magicDefense],
                 trigger: [TRIGGER.auto],
-                effect: (holder, rate) => EFFECT.statAdd(holder, STAT.magicDefense, 0.6 * holder.getStat(STAT.physicalAttack), rate),
+                effect: (holder, rate) => EFFECT.statAdd(holder, STAT.magicDefense, Math.min(300, 0.6 * holder.getStat(STAT.physicalAttack)), rate),
                 rate: 1
             }
         ]
@@ -339,14 +362,14 @@ const EQUIPMENT_DATA = [
             {
                 name: "寒霜",
                 tags: [SKILL_TAG.reduceMoveSpeed],
-                trigger: [TRIGGER.normal, TRIGGER.skill],
+                trigger: [TRIGGER.normalAttack, TRIGGER.skill],
                 effect: (attacker, defender, rate) => {},
-                rate: 1
+                rate: 0
             },
             {
                 name: "冻伤",
                 tags: [SKILL_TAG.damage],
-                trigger: [TRIGGER.normal, TRIGGER.skill],
+                trigger: [TRIGGER.normalAttack, TRIGGER.skill],
                 effect: (attacker, defender, rate) => EFFECT.damageCD(
                     attacker,
                     defender,
@@ -372,7 +395,7 @@ const EQUIPMENT_DATA = [
             {
                 name: "重伤",
                 tags: [SKILL_TAG.heavyInjury],
-                trigger: [TRIGGER.normal, TRIGGER.skill],
+                trigger: [TRIGGER.normalAttack, TRIGGER.skill],
                 effect: (attacker, defender, rate) => {},
                 rate: 0,
                 priority: 0.35
@@ -406,7 +429,7 @@ const EQUIPMENT_DATA = [
             name: "驱散",
             tags: [SKILL_TAG.damageReduction],
             effect: (holder, rate) => EFFECT.statAdd(holder, STAT.damageReduction, 0.35, rate),
-            rate: 0.2,
+            rate: 0.3,
             cooldown: 90,
         },
         passiveList: [
@@ -415,7 +438,7 @@ const EQUIPMENT_DATA = [
                 tags: [SKILL_TAG.reduceMoveSpeed, SKILL_TAG.damageReduction],
                 trigger: [TRIGGER.skill],
                 effect: (attacker, defender, rate) => {},
-                rate: 1,
+                rate: 0,
                 priority: 0.3
             },
         ]
@@ -433,7 +456,7 @@ const EQUIPMENT_DATA = [
             {
                 name: "破败",
                 tags: [SKILL_TAG.damage],
-                trigger: [TRIGGER.normal],
+                trigger: [TRIGGER.normalAttack],
                 effect: (attacker, defender, rate) => EFFECT.damageNA(
                     attacker,
                     defender,
@@ -503,7 +526,7 @@ const EQUIPMENT_DATA = [
             {
                 name: "强击",
                 tags: [SKILL_TAG.moveSpeedIncreased, SKILL_TAG.damage],
-                trigger: [TRIGGER.normal],
+                trigger: [TRIGGER.normalAttack],
                 effect: (attacker, defender, rate) => EFFECT.damageCD(
                     attacker,
                     defender,
@@ -530,7 +553,7 @@ const EQUIPMENT_DATA = [
             {
                 name: "电弧",
                 tags: [SKILL_TAG.damage],
-                trigger: [TRIGGER.normal],
+                trigger: [TRIGGER.normalAttack],
                 effect:(attacker, defender, rate) => EFFECT.damageNA(
                     attacker,
                     defender,
@@ -628,7 +651,7 @@ const EQUIPMENT_DATA = [
             name: "逐日",
             tags: [SKILL_TAG.attackRange, SKILL_TAG.speedUP],
             effect: (holder, rate) => {},
-            rate: 1,
+            rate: 0,
             cooldown: 60,
         }
     },
@@ -701,7 +724,7 @@ const EQUIPMENT_DATA = [
         ]
     },
     {
-        name: "反伤刃甲",
+        name: "反伤韧甲",
         type: EQUIPMENT_TYPE.defense,
         price: 2020,
         stats: {
@@ -713,7 +736,7 @@ const EQUIPMENT_DATA = [
             name: "反刺",
             tags: [SKILL_TAG.damage],
             effect: (attack, defender, rate) => {},
-            rate: 1,
+            rate: 0,
             cooldown: 60,
         },
         passiveList: [
@@ -753,7 +776,7 @@ const EQUIPMENT_DATA = [
             {
                 name: "狂怒",
                 tags: [SKILL_TAG.damage],
-                trigger: [TRIGGER.normal],
+                trigger: [TRIGGER.normalAttack],
                 effect: (attacker, defender, rate) => EFFECT.damageNA(
                     attacker,
                     defender,
@@ -821,7 +844,7 @@ const EQUIPMENT_DATA = [
                     1,
                     rate
                 ),
-                rate: 1
+                rate: 0.8
             },
             {
                 name: "重伤",
@@ -853,8 +876,8 @@ const EQUIPMENT_DATA = [
                 name: "复苏",
                 tags: [SKILL_TAG.heal],
                 trigger: [TRIGGER.auto],
-                effect: (holder, rate) => EFFECT.heal(holder, holder, "霸者重装", holder.getStat(STAT.maxHP) * 0.005, 1, rate),
-                rate: 3
+                effect: (holder, rate) => EFFECT.healByTime(holder, holder, "霸者重装", holder.getStat(STAT.maxHP) * 0.005, rate),
+                rate: 1
             }
         ]
     },
@@ -1009,14 +1032,14 @@ const EQUIPMENT_DATA = [
             {
                 name: "重创",
                 tags: [SKILL_TAG.damage],
-                trigger: [TRIGGER.normal],
+                trigger: [TRIGGER.normalAttack],
                 effect: (attacker, defender, rate) => {},
                 rate: 0
             },
             {
                 name: "神力",
                 tags: [SKILL_TAG.damage],
-                trigger: [TRIGGER.normal],
+                trigger: [TRIGGER.normalAttack],
                 effect: (attacker, defender, rate) => EFFECT.damageCD(
                     attacker,
                     defender,
@@ -1044,18 +1067,18 @@ const EQUIPMENT_DATA = [
         passiveList: [
             {
                 name: "强击",
-                tags: [SKILL_TAG.damage],
-                trigger: [TRIGGER.normal],
+                tags: [SKILL_TAG.damage, SKILL_TAG.reduceMoveSpeed],
+                trigger: [TRIGGER.normalAttack],
                 effect: (attacker, defender, rate) => EFFECT.damageCD(
                     attacker,
                     defender,
                     "冰痕之握",
                     DAMAGE_TYPE.physical,
-                    attacker.getStat(STAT.maxHP) * 0.03 * attacker.getStat(STAT.attackRange) === STAT.ATTACK_RANGE.ranged? 0.5: 1,
+                    growByLevel(attacker.level, 210, 420),
                     1.2,
                     rate
                 ),
-                rate: 1,
+                rate: 0.4,
                 priority: 0
             }
         ]
@@ -1183,17 +1206,16 @@ const EQUIPMENT_DATA = [
                 name: "急速战靴",
                 tags: [SKILL_TAG.heal],
                 trigger: [TRIGGER.auto],
-                effect: (holder, rate) => EFFECT.heal(
+                effect: (holder, rate) => EFFECT.healByNormalAttack(
                     holder,
                     holder,
                     "急速战靴",
                     1 / holder.totalStats.attackTime * holder.getStat(STAT.attackRange) === STAT.ATTACK_RANGE.melee?
                         growByLevel(holder.level, 20, 40):
                         growByLevel(holder.level, 30, 60),
-                    1,
                     rate
                 ),
-                rate: 5
+                rate: 1
             }
         ]
     },
@@ -1284,6 +1306,15 @@ const RUNE_DATA = [
         color: RUNE_COLOR.red,
         stats: {
             criticalRate: 0.016
+        },
+        level: 5
+    },
+    {
+        name: "梦魇",
+        color: RUNE_COLOR.red,
+        stats: {
+            magicAttack: 4.2,
+            magicPenetration: 2.4
         },
         level: 5
     },
@@ -1401,6 +1432,15 @@ const RUNE_DATA = [
         },
         level: 5
     },
+    {
+        name: "心眼",
+        color: RUNE_COLOR.green,
+        stats: {
+            attackSpeed: 0.006,
+            magicPenetration: 6.4
+        },
+        level: 5
+    },
 ];
 
 const EFFECT = {
@@ -1429,6 +1469,22 @@ const EFFECT = {
             source: source,
             value: value,
             cooldown: cooldown,
+            rate: rate
+        });
+    },
+    healByTime: (attacker, defender, source, value, rate) => {
+        defender.healList[attacker.name].push({
+            source: source,
+            value: value * defender.battleTime.total,
+            cooldown: defender.battleTime.total,
+            rate: rate
+        });
+    },
+    healByNormalAttack: (attacker, defender, source, value, rate) => {
+        attacker.healList[defender.name].push({
+            source: source,
+            value: value * attacker.battleTime.normalAttack,
+            cooldown: attacker.battleTime.normalAttack,
             rate: rate
         });
     },

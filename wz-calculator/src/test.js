@@ -1,5 +1,5 @@
 import Hero from "./game/Hero.js"
-import {HERO_DATA, ENEMY_DATA, EQUIPMENT_DATA, RUNE_DATA, RUNE_COLOR} from "./game/Data.js"
+import {HERO_DATA, ENEMY_DATA, EQUIPMENT_DATA, RUNE_DATA, RUNE_COLOR, DAMAGE_TYPE} from "./game/Data.js"
 import Equipment from "./game/Equipment.js";
 
 let hero = null;
@@ -20,24 +20,12 @@ function init() {
 function initData() {
     hero = new Hero(HERO_DATA[0]);
     hero.setEnemy(
-        [new Hero(ENEMY_DATA.enemyDPS_1), new Hero(ENEMY_DATA.enemyDPS_2)],
-        [new Hero(ENEMY_DATA.enemyEHP_1), new Hero(ENEMY_DATA.enemyEHP_2)]
+        [new Hero(ENEMY_DATA.enemyDPS_1, false), new Hero(ENEMY_DATA.enemyDPS_2, false)],
+        [new Hero(ENEMY_DATA.enemyEHP_1, false), new Hero(ENEMY_DATA.enemyEHP_2, false)]
     );
-    // hero.addEquipment("影刃");
-    // hero.addEquipment("无尽战刃");
-    // hero.addEquipment("仁者破晓");
-    // hero.addEquipment("闪电匕首");
-    // hero.addEquipment("末世");
-    // hero.addRune("祸源", 5);
-    // hero.addRune("宿命", 3);
-    // hero.addRune("鹰眼", 6);
-    // hero.addRune("虚空", 1);
-    // hero.addRune("夺萃", 5);
-    // hero.addRune("狩猎", 2);
-    // hero.addRune("狩猎", 20);
     let saveData = JSON.parse(localStorage.getItem('saveData'));
     if (saveData) {
-        Equipment.setSaveData(saveData.equipments);
+        Equipment.setSaveData(saveData.equipmentData);
         hero.setSaveData(saveData.hero);
     }
     hero.updateDelta(RUNE_DATA, EQUIPMENT_DATA);
@@ -60,7 +48,7 @@ function initButton() {
     btnContainer.appendChild(getButton("编辑", event => {
         const json = JSON.stringify({
             hero: hero.getSaveData(),
-            equipments: Equipment.getSaveData()
+            equipmentData: Equipment.getSaveData()
         },null, '\t');
         const textarea = document.createElement("textarea");
         textarea.value = json;
@@ -71,7 +59,7 @@ function initButton() {
             padding: '8px 8px 0 8px',
             ok: () => {
                 let data = JSON.parse(textarea.value);
-                Equipment.setSaveData(data.equipments);
+                Equipment.setSaveData(data.equipmentData);
                 hero.setSaveData(data.hero);
                 hero.updateDelta(RUNE_DATA, EQUIPMENT_DATA);
                 updates.forEach(update => update());
@@ -86,12 +74,49 @@ function initButton() {
         });
     }));
     btnContainer.appendChild(getButton("导入", () => {
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+
+            const reader = new FileReader();
+            reader.onload = event => {
+                const result = event.target.result
+                if (typeof result === "string") {
+                    const data = JSON.parse(result);
+
+                    Equipment.setSaveData(data.equipmentData);
+                    hero.setSaveData(data.hero);
+                    hero.updateDelta(RUNE_DATA, EQUIPMENT_DATA);
+                    updates.forEach(update => update());
+                } else {
+                    console.warn("导入文件格式错误");
+                }
+            };
+
+            reader.readAsText(file);
+        }
+
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.style.display = 'none';
+
+        fileInput.addEventListener('change', handleFileSelect, false);
+
+        fileInput.click();
     }));
     btnContainer.appendChild(getButton("导出", () => {
+        const filename = hero.exportFileName() + ".json";
+
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(new Blob([JSON.stringify({
+            hero: hero.getSaveData(),
+            equipmentData: Equipment.getSaveData()
+        }, null, '\t')], {type: 'application/json'}));
+        link.download = filename;
+        link.click();
     }));
     btnContainer.appendChild(getButton("暂存", () => localStorage.setItem('saveData', JSON.stringify({
         hero: hero.getSaveData(),
-        equipments: Equipment.getSaveData()
+        equipmentData: Equipment.getSaveData()
     }))));
 }
 
@@ -142,6 +167,7 @@ function initHeroGrid() {
         healIncreased: "增疗"
 
     };
+    const TOOLTIP_KEYS = ["DPS_1", "EHP_1", "DPS_2", "EHP_2"];
 
     const getSubRowData = () => {
         let subRowData = [[], []];
@@ -150,26 +176,110 @@ function initHeroGrid() {
             {key: "price", value: hero.totalPrice},
             {key: "DPS", value: hero.DPS.average},
             {key: "EHP", value: hero.EHP.average},
-            {key: "DPS_1", value: hero.DPS[0]},
-            {key: "EHP_1", value: hero.EHP[0]},
-            {key: "DPS_2", value: hero.DPS[1]},
-            {key: "EHP_2", value: hero.EHP[1]},
+            {key: "DPS_1", value: hero.DPS[0], enemy: hero.enemiesDPS[0].name},
+            {key: "EHP_1", value: hero.EHP[0], enemy: hero.enemiesEHP[0].name},
+            {key: "DPS_2", value: hero.DPS[1], enemy: hero.enemiesDPS[1].name},
+            {key: "EHP_2", value: hero.EHP[1], enemy: hero.enemiesEHP[1].name},
             {key: "name", value: hero.name},
             {key: "level", value: hero.level},
             ...Object.keys(STAT_KEYS).map(key => ({
                 key: key,
                 value: hero.getStat(key)
             })),
-            ...Object.keys(hero.bonusStats).map(key => hero.bonusStats[key])
+            ...Object.keys(hero.bonusStats).filter(key => typeof hero.bonusStats[key] === 'object').map(key => hero.bonusStats[key])
         ].forEach((row, i) => subRowData[i % 2].push(row));
         return subRowData;
     }
     let subRowData = getSubRowData();
 
+    class CustomTooltip {
+        init(params) {
+            this.eGui = document.createElement('div');
+            if (TOOLTIP_KEYS.includes(params.data.key)) {
+                this.eGui.className = 'custom-tooltip';
+                this.children = [document.createElement('div'), document.createElement('div')];
+                this.getGui().append(...this.children);
+                if (params.data.key.includes("DPS")) {
+                    let gridOptions = {
+                        defaultColDef: {
+                            menuTabs: [],
+                            flex: 1
+                        },
+                        columnDefs: [
+                            {headerName: '来源', field: 'source', minWidth: 84},
+                            {headerName: '类型', field: 'type'},
+                            {headerName: '伤害', field: 'value', valueFormatter: params => params.value.toFixed(0)},
+                            {headerName: '冷却', field: 'cooldown'},
+                            {headerName: '应用', field: 'rate'},
+                        ]
+                    }
+                    if (hero.damageNAList[params.data.enemy].length) {
+                        new agGrid.Grid(this.children[0], {
+                            ...gridOptions,
+                            rowData: hero.damageNAList[params.data.enemy].map(damage => ({...damage, cooldown: "-"}))
+                        });
+                    } else {
+                        this.children[0].remove();
+                    }
+                    if (hero.damageCDList[params.data.enemy].length) {
+                        new agGrid.Grid(this.children[1], {
+                            ...gridOptions,
+                            rowData: hero.damageCDList[params.data.enemy]
+                        });
+                    } else {
+                        this.children[1].remove();
+                    }
+                } else {
+                    let gridOptions = {
+                        defaultColDef: {
+                            menuTabs: [],
+                            flex: 1
+                        },
+                        columnDefs: [
+                            {headerName: '来源', field: 'source', minWidth: 84},
+                            {headerName: '类型', field: 'type'},
+                            {headerName: '数值', field: 'value', valueFormatter: params => params.value.toFixed(0)},
+                            {headerName: '冷却', field: 'cooldown'},
+                            {headerName: '应用', field: 'rate'},
+                        ]
+                    }
+                    if (hero.healList[params.data.enemy].length) {
+                        new agGrid.Grid(this.children[0], {
+                            ...gridOptions,
+                            rowData: hero.healList[params.data.enemy].map(heal => ({...heal, type: "-"}))
+                        });
+                    } else {
+                        this.children[0].remove();
+                    }
+                    if (hero.shieldList[params.data.enemy].length) {
+                        new agGrid.Grid(this.children[1], {
+                            ...gridOptions,
+                            rowData: hero.shieldList[params.data.enemy].map(shield => ({
+                                ...shield,
+                                type: shield.types.includes(DAMAGE_TYPE.real) ? "真实" : shield.types.length === 1 ? shield.types[0] : "普通"
+                            }))
+                        });
+                    } else {
+                        this.children[1].remove();
+                    }
+                }
+                this.popupDiv = [...document.body.children].slice(-2);
+            }
+        }
+
+        getGui() {
+            return this.eGui;
+        }
+
+        destroy() {
+            this.popupDiv?.forEach(div => div.remove());
+        }
+    }
+
     const gridOptions = {
         defaultColDef: {
             menuTabs: [],
-            flex: 1,
+            flex: 1
         },
         columnDefs: [
             {
@@ -188,9 +298,15 @@ function initHeroGrid() {
                     if (typeof params.value !== 'number') return params.value;
                     if (params.value === 0) return "";
                     return params.value < 3 ? `${Math.floor(params.value * 100)}%` : Math.floor(params.value);
-                }
+                },
+                tooltipField: "value",
+                tooltipComponent: 'customTooltip', // 使用自定义 tooltip,
             }
         ],
+        components: {
+            customTooltip: CustomTooltip
+        },
+        tooltipShowDelay: 0,
         rowClassRules: {
             'bg-add bg-purple': params => params.data.key === "CP",
             'bg-add bg-yellow': params => params.data.key === "price",
@@ -339,6 +455,7 @@ function initShopGrid() {
             deltaCP: equipment.delta.CP,
             deltaDPS: equipment.delta.DPS,
             deltaEHP: equipment.delta.EHP,
+            effective: equipment.delta.CP / equipment.price,
             ...equipment.stats,
             passive_1: equipment.passiveList[0] ? equipment.passiveList[0].tags.join(" "): null,
             passiveRate_1: equipment.passiveList[0] ? equipment.passiveList[0].rate: null,
@@ -388,6 +505,14 @@ function initShopGrid() {
                 flex: 0,
                 valueFormatter: params => params.value.toFixed(0),
                 cellClass: 'bg-add bg-blue'
+            },
+            {
+                headerName: "性价",
+                field: "effective",
+                width: 60,
+                flex: 0,
+                valueFormatter: params => (params.value * 100).toFixed(0),
+                cellClass: 'bg-add bg-yellow'
             },
             {
                 headerName: "应用 ⏵ 被动1",

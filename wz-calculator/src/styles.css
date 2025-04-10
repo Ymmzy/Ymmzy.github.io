@@ -216,6 +216,11 @@ body {
     border-right: var(--ag-row-border-style) var(--ag-row-border-color) var(--ag-row-border-width);
 }
 
+#heroGrid-sub-1 .ag-root-wrapper,
+#heroGrid-sub-2 .ag-root-wrapper {
+    overflow: visible;
+}
+
 .my-sub-grid .ag-row:nth-child(-n+2)::before {
     content: "";
     position: absolute;
@@ -224,6 +229,23 @@ body {
     width: 100%;
     height: 100%;
     z-index: 1;
+}
+
+.custom-tooltip {
+    transition: none !important; /* 禁用过渡效果 */
+    width: 320px;
+    padding: 8px;
+    /*background: var(--ag-row-border-color);*/
+    background: rgba(88, 86, 82, 0.8);
+    border-radius: 8px;
+    display: flex;
+    flex-flow: column;
+    gap: 8px;
+    z-index: 1000;
+}
+
+.custom-tooltip .ag-header {
+    display: block;
 }
 
 .btn {

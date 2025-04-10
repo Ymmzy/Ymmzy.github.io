@@ -6,10 +6,9 @@ export default class Stats {
             ...Object.fromEntries(
                 Object.values(STAT).filter(stat => typeof stat === 'string').map(stat => [stat, 0])
             ),
+            [STAT.attackRange]: STAT.ATTACK_RANGE.melee,
             ...stats,
         }
-        finalStats[STAT.attackRange] = STAT.ATTACK_RANGE.melee;
-
         Object.assign(this, finalStats);
     }
 
@@ -26,7 +25,7 @@ export default class Stats {
                     // 冷却缩减上限为40%
                     this[key] = Math.min(this[key] + otherStats[key], 0.4);
                 } else if (key === STAT.attackSpeed) {
-                    // 暴击伤害上限为235%
+                    // 攻速上限为200%
                     this[key] = Math.min(this[key] + otherStats[key], 2);
                 } else if (key === STAT.criticalDamage) {
                     // 暴击伤害上限为235%
@@ -37,6 +36,9 @@ export default class Stats {
                 } else if (key === STAT.tenacity) {
                     // 韧性上限为100%
                     this[key] = Math.min(this[key] + otherStats[key], 1);
+                } else if (key === STAT.damageReduction || key === STAT.physicalDamageReduction) {
+                    // 免伤上限为80%
+                    this[key] = Math.min(this[key] + otherStats[key], 0.8);
                 } else if (key === STAT.attackRange) {
                     // 攻击范围保持不变，取第一个非空值
                     if (!this[key]) {
