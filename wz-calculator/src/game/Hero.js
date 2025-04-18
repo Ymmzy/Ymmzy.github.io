@@ -221,8 +221,9 @@ export default class Hero {
         // 计算输出
         this.enemiesDPS.forEach((enemy, i) => {
             this.DPS[i] = this.calculateDPS(enemy);
-            this.DPS.average += enemy.bonusStats.rate * this.DPS[i];
+            this.DPS.average += enemy.bonusStats.rate / this.DPS[i];
         });
+        this.DPS.average = 1 / this.DPS.average;
 
         // 计算普攻吸血
         this.healList[this.name].push({
@@ -235,8 +236,9 @@ export default class Hero {
         // 计算等效血量
         this.enemiesEHP.forEach((enemy, i) => {
             this.EHP[i] = this.calculateEHP(enemy);
-            this.EHP.average += enemy.bonusStats.rate * this.EHP[i];
+            this.EHP.average += enemy.bonusStats.rate / this.EHP[i];
         });
+        this.EHP.average = 1 / this.EHP.average;
 
         //计算综合战斗力
         this.CP = this.DPS.average * this.EHP.average / 5000;

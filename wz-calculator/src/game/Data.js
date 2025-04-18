@@ -243,8 +243,8 @@ const HERO_DATA = [
                 name: "一技能",
                 tags: [SKILL_TAG.attackSpeed],
                 trigger: [TRIGGER.auto],
-                effect: (holder, rate) => EFFECT.statAdd(holder, STAT.attackSpeed, 0.5, rate),
-                rate: 1
+                effect: (holder, rate) => EFFECT.statAdd(holder, STAT.attackSpeed, growByLevel(holder.level, 0.25, 0.5), rate),
+                rate: 0.5
             }
         ],
         exportFileName: function () {
@@ -271,6 +271,7 @@ const ENEMY_DATA = {
         bonusStats: {
             rate: 0.5,
             equipments: ["抵抗之靴", "红莲斗篷", "永夜守护", "反伤韧甲", "霸者重装", "不祥征兆"],
+            // equipments: ["抵抗之靴", "红莲斗篷", "永夜守护", "反伤韧甲", "不祥征兆"],
             runes: [["宿命", 10], ["调和", 10], ["虚空", 10]]
         }
     },
