@@ -2,10 +2,12 @@ import Hero from "./game/Hero.js"
 import {HERO_DATA, ENEMY_DATA, EQUIPMENT_DATA, RUNE_DATA, RUNE_COLOR, DAMAGE_TYPE} from "./game/Data.js"
 import Equipment from "./game/Equipment.js";
 
+const VERSION = '20250703';
 let hero = null;
 let updates = null;
 
 function init() {
+    console.warn("版本：20250703");
     initData();
     initButton();
 

@@ -60,7 +60,8 @@ const SKILL_TAG = {
     maxHP: "生命",
     healIncreased: "增疗",
     physicalDefense: "物抗",
-    cooldownReduction: "冷却"
+    cooldownReduction: "冷却",
+    revive: "复活"
 }
 const TRIGGER = {
     normalAttack: "普攻",
@@ -111,7 +112,7 @@ const HERO_DATA = [
     {
         name: "阿古朵",
         initialStats: {
-            maxHP: 3351,
+            maxHP: 3280,
             maxMP: 600,
             moveSpeedBase: 370,
 
@@ -128,7 +129,7 @@ const HERO_DATA = [
             mpRegen: 15 / 5
         },
         growthStats: {
-            maxHP: 202.9,
+            maxHP: 198,
             maxMP: 600 / 14,
 
             physicalAttack: 13.1,
@@ -216,6 +217,11 @@ const HERO_DATA = [
                         "蔚蓝石像": {
                             valueMin: 40,
                             valueMax: 80
+                        },
+                        "红隼": {
+                            name: STAT.physicalPenetration,
+                            valueMin: 60,
+                            valueMax: 120
                         }
                     };
                     if (holder.bonusStats.release.value === "蔚蓝石像") {
@@ -243,8 +249,8 @@ const HERO_DATA = [
                 name: "一技能",
                 tags: [SKILL_TAG.attackSpeed],
                 trigger: [TRIGGER.auto],
-                effect: (holder, rate) => EFFECT.statAdd(holder, STAT.attackSpeed, growByLevel(holder.level, 0.25, 0.5), rate),
-                rate: 0.5
+                effect: (holder, rate) => EFFECT.statAdd(holder, STAT.attackSpeed, growByLevel(holder.level, 0.15, 0.3), rate),
+                rate: 1
             }
         ],
         exportFileName: function () {
@@ -270,8 +276,7 @@ const ENEMY_DATA = {
         },
         bonusStats: {
             rate: 0.5,
-            equipments: ["抵抗之靴", "红莲斗篷", "永夜守护", "反伤韧甲", "霸者重装", "不祥征兆"],
-            // equipments: ["抵抗之靴", "红莲斗篷", "永夜守护", "反伤韧甲", "不祥征兆"],
+            equipments: ["抵抗之靴", "红莲斗篷", "永夜守护", "反伤刺甲", "霸者重装", "不祥征兆"],
             runes: [["宿命", 10], ["调和", 10], ["虚空", 10]]
         }
     },
@@ -289,8 +294,8 @@ const ENEMY_DATA = {
         },
         bonusStats: {
             rate: 0.5,
-            equipments: ["泣血之刃"],
-            runes: []
+            equipments: ["抵抗之靴", "影刃", "无尽战刃", "仁者破晓", "末世", "逐日之弓"],
+            runes: [["祸源", 10], ["夺萃", 10], ["鹰眼", 10]]
         }
     },
     enemyEHP_1: {
@@ -298,8 +303,8 @@ const ENEMY_DATA = {
         bonusStats: {
             damageType: DAMAGE_TYPE.physical,
             rate: 0.6,
-            equipments: ["暗影战斧"],
-            runes: [["异变", 10], ["鹰眼", 10]]
+            equipments: ["抵抗之靴", "暗影战斧", "暴烈之甲", "纯净苍穹", "强者破军", "魔女斗篷"],
+            runes: [["异变", 10], ["鹰眼", 10], ["狩猎", 10]]
         }
     },
     enemyEHP_2: {
@@ -307,28 +312,37 @@ const ENEMY_DATA = {
         bonusStats: {
             damageType: DAMAGE_TYPE.magic,
             rate: 0.4,
-            equipments: ["秘法之靴", "虚无法杖"],
-            runes: [["梦魇", 10], ["心眼", 10]]
+            equipments: ["秘法之靴", "占位", "占位", "占位", "虚无法杖", "占位"],
+            runes: [["梦魇", 10], ["心眼", 10], ["狩猎", 10]]
         }
     }
 }
 const EQUIPMENT_DATA = [
     {
+        name: "占位",
+        type: EQUIPMENT_TYPE.magic,
+        price: 1,
+        stats: {
+        },
+        passiveList: []
+    },
+    {
         name: "碎星锤",
         type: EQUIPMENT_TYPE.physical,
         price: 2080,
         stats: {
-            physicalAttack: 80,
-            cooldownReduction: 0.1
+            maxHP: 700,
+            physicalAttack: 90,
+            moveSpeedIncreased: 0.075
         },
         passiveList: [
             {
                 name: "破甲",
                 tags: [SKILL_TAG.physicalPenetration],
                 trigger: [TRIGGER.auto],
-                effect: (holder, rate) => EFFECT.statAdd(holder, STAT.physicalPenetrationPercent, 0.4, rate),
+                effect: (holder, rate) => EFFECT.statAdd(holder, STAT.physicalPenetrationPercent, 0.3, rate),
                 rate: 1,
-                priority: 0.4
+                priority: 0.3
             }
         ]
     },
@@ -337,28 +351,28 @@ const EQUIPMENT_DATA = [
         type: EQUIPMENT_TYPE.physical,
         price: 2060,
         stats: {
-            maxHP: 500,
+            maxHP: 600,
             physicalAttack: 90,
-            magicDefense: 100
+            magicDefense: 150
         },
         passiveList: [
             {
                 name: "破魔",
                 tags: [SKILL_TAG.magicDefense],
                 trigger: [TRIGGER.auto],
-                effect: (holder, rate) => EFFECT.statAdd(holder, STAT.magicDefense, Math.min(300, 0.6 * holder.getStat(STAT.physicalAttack)), rate),
+                effect: (holder, rate) => EFFECT.statAdd(holder, STAT.magicDefense, Math.min(250, 0.5 * holder.getStat(STAT.physicalAttack)), rate),
                 rate: 1
             }
         ]
     },
     {
-        name: "寒霜侵袭",
+        name: "寒霜袭侵",
         type: EQUIPMENT_TYPE.physical,
-        price: 2060,
+        price: 2040,
         stats: {
             maxHP: 750,
             physicalAttack: 70,
-            attackSpeed: 0.3
+            attackSpeed: 0.25
         },
         passiveList: [
             {
@@ -375,7 +389,7 @@ const EQUIPMENT_DATA = [
                 effect: (attacker, defender, rate) => EFFECT.damageCD(
                     attacker,
                     defender,
-                    "寒霜侵袭",
+                    "寒霜袭侵",
                     DAMAGE_TYPE.physical,
                     growByLevel(attacker.level, 135, 270) + 0.45 * attacker.getExtraStat(STAT.physicalAttack),
                     3,
@@ -387,11 +401,11 @@ const EQUIPMENT_DATA = [
     {
         name: "制裁之刃",
         type: EQUIPMENT_TYPE.physical,
-        price: 1860,
+        price: 2080,
         stats: {
             physicalAttack: 100,
-            attackSpeed: 0.15,
-            physicalLifesteal: 0.15
+            attackSpeed: 0.2,
+            physicalLifesteal: 0.2
         },
         passiveList: [
             {
@@ -410,29 +424,29 @@ const EQUIPMENT_DATA = [
                     attacker,
                     defender,
                     "制裁之刃",
-                    growByLevel(defender.level, 400, 610),
+                    growByLevel(defender.level, 375, 750),
                     20,
                     rate),
                 rate: 0.5,
-                priority: 610
+                priority: 750
             },
         ]
     },
     {
         name: "纯净苍穹",
         type: EQUIPMENT_TYPE.physical,
-        price: 2120,
+        price: 2140,
         stats: {
-            maxHP: 500,
-            physicalAttack: 100,
-            cooldownReduction: 0.1
+            physicalAttack: 80,
+            cooldownReduction: 0.1,
+            physicalDefense: 150
         },
         active: {
             name: "驱散",
             tags: [SKILL_TAG.damageReduction],
-            effect: (holder, rate) => EFFECT.statAdd(holder, STAT.damageReduction, 0.35, rate),
+            effect: (holder, rate) => EFFECT.statAdd(holder, STAT.damageReduction, 0.3, rate),
             rate: 0.3,
-            cooldown: 90,
+            cooldown: 75,
         },
         passiveList: [
             {
@@ -450,9 +464,10 @@ const EQUIPMENT_DATA = [
         type: EQUIPMENT_TYPE.physical,
         price: 2160,
         stats: {
-            physicalAttack: 60,
-            attackSpeed: 0.3,
-            physicalLifesteal: 0.1
+            maxHP: 500,
+            physicalAttack: 40,
+            attackSpeed: 0.2,
+            physicalLifesteal: 0.2
         },
         passiveList: [
             {
@@ -464,35 +479,29 @@ const EQUIPMENT_DATA = [
                     defender,
                     "末世",
                     DAMAGE_TYPE.physical,
-                    0.08 * defender.getStat(STAT.maxHP),
+                    growByLevel(attacker.level, 85, 170) + 0.07 * defender.getExtraStat(STAT.maxHP),
                     rate),
-                rate: 0.3
+                rate: 1
             },
         ]
     },
     {
         name: "泣血之刃",
         type: EQUIPMENT_TYPE.physical,
-        price: 1800,
+        price: 2000,
         stats: {
             maxHP: 500,
-            physicalAttack: 100,
+            physicalAttack: 90,
             physicalLifesteal: 0.25
         },
         passiveList: [
             {
-                name: "回魂",
+                name: "养战",
                 tags: [SKILL_TAG.heal],
                 trigger: [TRIGGER.defend],
-                effect: (attacker, defender, rate) => EFFECT.heal(
-                    attacker,
-                    defender,
-                    "泣血之刃",
-                    growByLevel(defender.level, 400, 610),
-                    20,
-                    rate),
-                rate: 0.5,
-                priority: 610
+                effect: (attacker, defender, rate) => {},
+                rate: 1,
+                priority: 0.2
             },
         ]
     },
@@ -520,9 +529,9 @@ const EQUIPMENT_DATA = [
         price: 2100,
         stats: {
             maxHP: 600,
-            physicalAttack: 80,
-            criticalRate: 0.2,
-            maxMP: 400
+            physicalAttack: 55,
+            attackSpeed: 0.15,
+            criticalRate: 0.2
         },
         passiveList: [
             {
@@ -546,10 +555,11 @@ const EQUIPMENT_DATA = [
     {
         name: "闪电匕首",
         type: EQUIPMENT_TYPE.physical,
-        price: 1840,
+        price: 2040,
         stats: {
+            physicalAttack: 40,
             attackSpeed: 0.35,
-            moveSpeedIncreased: 0.08
+            moveSpeedIncreased: 0.075
         },
         passiveList: [
             {
@@ -561,7 +571,7 @@ const EQUIPMENT_DATA = [
                     defender,
                     "闪电匕首",
                     DAMAGE_TYPE.magic,
-                    growByLevel(attacker.level, 40, 82) + growByLevel(attacker.level, 140, 420) / 3,
+                    growByLevel(attacker.level, 40, 80) + growByLevel(attacker.level, 160, 400) / 3,
                     rate
                 ),
                 rate: 1
@@ -571,12 +581,12 @@ const EQUIPMENT_DATA = [
     {
         name: "影刃",
         type: EQUIPMENT_TYPE.physical,
-        price: 1950,
+        price: 2040,
         stats: {
-            physicalAttack: 40,
+            physicalAttack: 45,
             attackSpeed: 0.35,
-            criticalRate: 0.25,
-            moveSpeedIncreased: 0.05
+            criticalRate: 0.2,
+            moveSpeedIncreased: 0.075
         },
         passiveList: [
             {
@@ -632,12 +642,12 @@ const EQUIPMENT_DATA = [
     {
         name: "逐日之弓",
         type: EQUIPMENT_TYPE.physical,
-        price: 2050,
+        price: 2100,
         stats: {
-            physicalAttack: 50,
-            attackSpeed: 0.25,
-            criticalRate: 0.1,
-            moveSpeedIncreased: 0.05
+            physicalAttack: 40,
+            attackSpeed: 0.2,
+            criticalRate: 0.15,
+            moveSpeedIncreased: 0.075
         },
         passiveList: [
             {
@@ -651,7 +661,7 @@ const EQUIPMENT_DATA = [
         ],
         active: {
             name: "逐日",
-            tags: [SKILL_TAG.attackRange, SKILL_TAG.speedUP],
+            tags: [SKILL_TAG.attackRange, SKILL_TAG.moveSpeedIncreased],
             effect: (holder, rate) => {},
             rate: 0,
             cooldown: 60,
@@ -662,9 +672,9 @@ const EQUIPMENT_DATA = [
         type: EQUIPMENT_TYPE.physical,
         price: 2570,
         stats: {
-            physicalAttack: 90,
+            physicalAttack: 75,
             attackSpeed: 0.3,
-            criticalRate: 0.1
+            criticalRate: 0.15
         },
         passiveList: [
             {
@@ -687,11 +697,11 @@ const EQUIPMENT_DATA = [
     {
         name: "逐风",
         type: EQUIPMENT_TYPE.physical,
-        price: 2090,
+        price: 2080,
         stats: {
-            maxHP: 700,
-            physicalAttack: 65,
-            attackSpeed: 0.25
+            maxHP: 650,
+            physicalAttack: 55,
+            attackSpeed: 0.3
         },
         passiveList: [
             {
@@ -709,10 +719,10 @@ const EQUIPMENT_DATA = [
     {
         name: "虚无法杖",
         type: EQUIPMENT_TYPE.magic,
-        price: 2110,
+        price: 2040,
         stats: {
-            maxHP: 300,
-            magicAttack: 240,
+            maxHP: 500,
+            magicAttack: 210,
             cooldownReduction: 0.05
         },
         passiveList: [
@@ -726,11 +736,11 @@ const EQUIPMENT_DATA = [
         ]
     },
     {
-        name: "反伤韧甲",
+        name: "反伤刺甲",
         type: EQUIPMENT_TYPE.defense,
         price: 2020,
         stats: {
-            maxHP: 500,
+            maxHP: 700,
             physicalAttack: 45,
             physicalDefense: 300
         },
@@ -739,25 +749,17 @@ const EQUIPMENT_DATA = [
             tags: [SKILL_TAG.damage],
             effect: (attack, defender, rate) => {},
             rate: 0,
-            cooldown: 60,
+            cooldown: 75,
         },
-        passiveList: [
-            {
-                name: "韧甲",
-                tags: [SKILL_TAG.tenacity],
-                trigger: [TRIGGER.auto],
-                effect: (holder, rate) => EFFECT.statAdd(holder, STAT.tenacity, 0.1, rate),
-                rate: 1
-            }
-        ]
+        passiveList: []
     },
     {
         name: "血魔之怒",
         type: EQUIPMENT_TYPE.defense,
-        price: 2100,
+        price: 2180,
         stats: {
-            maxHP: 800,
-            physicalAttack: 40
+            maxHP: 900,
+            physicalAttack: 75
         },
         active: {
             name: "血怒",
@@ -768,11 +770,11 @@ const EQUIPMENT_DATA = [
                 "血魔之怒",
                 [DAMAGE_TYPE.physical, DAMAGE_TYPE.magic],
                 holder.getStat(STAT.maxHP) * 0.4,
-                60,
+                75,
                 rate
             ),
             rate: 0.3,
-            cooldown: 60,
+            cooldown: 75,
         },
         passiveList: [
             {
@@ -784,7 +786,7 @@ const EQUIPMENT_DATA = [
                     defender,
                     "血魔之怒",
                     DAMAGE_TYPE.physical,
-                    attacker.getStat(STAT.maxHP) * 0.02,
+                    attacker.getStat(STAT.maxHP) * 0.015,
                     rate
                 ),
                 rate: 1
@@ -796,30 +798,34 @@ const EQUIPMENT_DATA = [
         type: EQUIPMENT_TYPE.defense,
         price: 2030,
         stats: {
-            maxHP: 1000,
-            physicalDefense: 240
+            maxHP: 900,
+            cooldownReduction: 0.07,
+            physicalDefense: 150
         },
         active: {
             name: "冲击",
             tags: [SKILL_TAG.shield],
             effect: (holder, rate) => {},
             rate: 0,
-            cooldown: 60,
+            cooldown: 75,
         },
         passiveList: [
             {
                 name: "冰甲",
-                tags: [SKILL_TAG.shield],
+                tags: [SKILL_TAG.tenacity, SKILL_TAG.shield],
                 trigger: [TRIGGER.defend],
-                effect: (attacker, defender, rate) => EFFECT.shield(
-                    attacker,
-                    defender,
-                    "冰霜冲击",
-                    [DAMAGE_TYPE.physical, DAMAGE_TYPE.magic],
-                    defender.getStat(STAT.maxHP) * 0.12,
-                    15,
-                    rate
-                ),
+                effect: (attacker, defender, rate) => {
+                    EFFECT.statAdd(defender, STAT.tenacity, 0.1, 1);
+                    EFFECT.shield(
+                        attacker,
+                        defender,
+                        "冰霜冲击",
+                        [DAMAGE_TYPE.physical, DAMAGE_TYPE.magic],
+                        defender.getStat(STAT.maxHP) * 0.1,
+                        15,
+                        rate
+                    );
+                },
                 rate: 0.5
             }
         ]
@@ -827,10 +833,11 @@ const EQUIPMENT_DATA = [
     {
         name: "红莲斗篷",
         type: EQUIPMENT_TYPE.defense,
-        price: 2010,
+        price: 2040,
         stats: {
-            maxHP: 1000,
-            physicalDefense: 240
+            maxHP: 1100,
+            physicalDefense: 150,
+            magicDefense: 150
         },
         passiveList: [
             {
@@ -862,9 +869,9 @@ const EQUIPMENT_DATA = [
         type: EQUIPMENT_TYPE.defense,
         price: 2510,
         stats: {
-            maxHP: 1500,
-            physicalDefense: 180,
-            magicDefense: 90
+            maxHP: 1800,
+            physicalDefense: 160,
+            magicDefense: 80
         },
         passiveList: [
             {
@@ -886,10 +893,10 @@ const EQUIPMENT_DATA = [
     {
         name: "不祥征兆",
         type: EQUIPMENT_TYPE.defense,
-        price: 2050,
+        price: 2020,
         stats: {
             maxHP: 1200,
-            physicalDefense: 270
+            physicalDefense: 300
         },
         passiveList: [
             {
@@ -904,11 +911,11 @@ const EQUIPMENT_DATA = [
     {
         name: "不死鸟之",
         type: EQUIPMENT_TYPE.defense,
-        price: 2000,
+        price: 2020,
         stats: {
-            maxHP: 1200,
-            physicalDefense: 100,
-            magicDefense: 200
+            maxHP: 1350,
+            physicalDefense: 90,
+            magicDefense: 180
         },
         passiveList: [
             {
@@ -916,18 +923,17 @@ const EQUIPMENT_DATA = [
                 tags: [SKILL_TAG.healIncreased],
                 trigger: [TRIGGER.auto],
                 effect: (holder, rate) => EFFECT.statAdd(holder, STAT.healIncreased, 0.5, rate),
-                rate: 0.4
+                rate: 0.5
             }
         ]
     },
     {
         name: "魔女斗篷",
         type: EQUIPMENT_TYPE.defense,
-        price: 2030,
+        price: 2020,
         stats: {
-            maxHP: 1000,
-            magicDefense: 240,
-            hpRegen: 100
+            maxHP: 1100,
+            magicDefense: 300
         },
         passiveList: [
             {
@@ -957,11 +963,11 @@ const EQUIPMENT_DATA = [
     {
         name: "极寒风暴",
         type: EQUIPMENT_TYPE.defense,
-        price: 2100,
+        price: 2040,
         stats: {
+            maxHP: 600,
             cooldownReduction: 0.2,
-            maxMP: 500,
-            physicalDefense: 360
+            physicalDefense: 240
         },
         passiveList: [
             {
@@ -974,14 +980,33 @@ const EQUIPMENT_DATA = [
         ]
     },
     {
-        name: "暴烈之甲",
+        name: "贤者的庇",
         type: EQUIPMENT_TYPE.defense,
-        price: 2100,
+        price: 2280,
         stats: {
             maxHP: 900,
-            physicalAttack: 30,
-            physicalDefense: 210,
-            moveSpeedIncreased: 0.05
+            cooldownReduction: 0.05,
+            physicalDefense: 150,
+            magicDefense: 150
+        },
+        passiveList: [
+            {
+                name: "复生",
+                tags: [SKILL_TAG.revive],
+                trigger: [TRIGGER.auto],
+                effect: (attacker, defender, rate) => {},
+                rate: 0
+            }
+        ]
+    },
+    {
+        name: "暴烈之甲",
+        type: EQUIPMENT_TYPE.defense,
+        price: 2050,
+        stats: {
+            maxHP: 900,
+            physicalAttack: 35,
+            physicalDefense: 210
         },
         passiveList: [
             {
@@ -989,8 +1014,8 @@ const EQUIPMENT_DATA = [
                 tags: [SKILL_TAG.damageIncreased, SKILL_TAG.moveSpeedIncreased],
                 trigger: [TRIGGER.auto],
                 effect: (holder, rate) => {
-                    EFFECT.statAdd(holder, STAT.damageIncreased, 0.02 * 5, rate);
-                    EFFECT.statAdd(holder, STAT.moveSpeedIncreased, 0.01 * 5, rate);
+                    EFFECT.statAdd(holder, STAT.damageIncreased, 0.01 * 10, rate);
+                    EFFECT.statAdd(holder, STAT.moveSpeedIncreased, 0.01 * 10, rate);
                 },
                 rate: 0.6
             }
@@ -999,10 +1024,11 @@ const EQUIPMENT_DATA = [
     {
         name: "永夜守护",
         type: EQUIPMENT_TYPE.defense,
-        price: 2110,
+        price: 2020,
         stats: {
             maxHP: 1000,
-            magicDefense: 360
+            magicDefense: 210,
+            moveSpeedIncreased: 0.075
         },
         passiveList: [
             {
@@ -1026,9 +1052,9 @@ const EQUIPMENT_DATA = [
         type: EQUIPMENT_TYPE.defense,
         price: 2040,
         stats: {
-            maxHP: 1200,
-            physicalDefense: 200,
-            magicDefense: 100
+            maxHP: 1350,
+            physicalDefense: 180,
+            magicDefense: 90
         },
         passiveList: [
             {
@@ -1048,7 +1074,7 @@ const EQUIPMENT_DATA = [
                     "怒龙剑盾",
                     DAMAGE_TYPE.physical,
                     attacker.getStat(STAT.maxHP) * 0.03 * attacker.getStat(STAT.attackRange) === STAT.ATTACK_RANGE.ranged? 0.5: 1,
-                    2.5,
+                    2,
                     rate
                 ),
                 rate: 1
@@ -1058,13 +1084,11 @@ const EQUIPMENT_DATA = [
     {
         name: "冰痕之握",
         type: EQUIPMENT_TYPE.defense,
-        price: 2100,
+        price: 2060,
         stats: {
-            maxHP: 500,
-            physicalAttack: 40,
+            physicalAttack: 60,
             cooldownReduction: 0.1,
-            maxMP: 400,
-            physicalDefense: 240
+            physicalDefense: 300
         },
         passiveList: [
             {
@@ -1167,8 +1191,7 @@ const EQUIPMENT_DATA = [
         type: EQUIPMENT_TYPE.move,
         price: 700,
         stats: {
-            maxMP: 150,
-            //mpRegenIncreased: 0.15
+            maxMP: 550
         },
         passiveList: [
             {

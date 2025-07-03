@@ -13,6 +13,7 @@ export default class Hero {
         this.skills = skills;
         this.exportFileName = exportFileName;
 
+        this.stage = 0;
         this.level = 15;
         this.equipments = [];
         this.runes = [];
@@ -24,12 +25,23 @@ export default class Hero {
 
     clone() {
         const clone = new Hero(this, false);
+        clone.stage = this.stage;
         clone.level = this.level;
         clone.equipments = [...this.equipments];
         clone.runes = [...this.runes];
         clone.enemiesDPS = this.enemiesDPS;
         clone.enemiesEHP = this.enemiesEHP;
         return clone;
+    }
+
+    setStage(stage) {
+        this.stage = stage;
+        [...this.enemiesDPS, ...this.enemiesEHP].forEach(enemy => enemy.setStage(stage));
+
+        if (stage > 0) {
+            const stageToLevel = [0, 6, 9, 12, 15, 15];
+            this.setLevel(stageToLevel[stage]);
+        }
     }
 
     setLevel(level) {
@@ -180,8 +192,9 @@ export default class Hero {
             this.extraStats.add(rune.stats);
         });
 
+        const stageToEquipmentLimit = [6, 2, 3, 4, 5, 6];
         // 计算装备加成
-        this.equipments.forEach(equipment => {
+        this.equipments.slice(0, stageToEquipmentLimit[this.stage]).forEach(equipment => {
             this.extraStats.add(equipment.stats);
             this.totalPrice += equipment.price;
             if (!this.active) this.active = equipment.active;
@@ -326,6 +339,7 @@ export default class Hero {
     getSaveData() {
         console.log("====== Save Hero ======");
         return {
+            stage: this.stage,
             level: this.level,
             bonusStats: this.bonusStats,
             equipments:this.equipments.map(equipment => equipment.name),
@@ -354,6 +368,8 @@ export default class Hero {
         Object.keys(saveData.enemyRate.dps).map(name => this.enemiesDPS.find(enemy => enemy.name === name).bonusStats.rate = saveData.enemyRate.dps[name]);
         Object.keys(saveData.enemyRate.ehp).map(name => this.enemiesEHP.find(enemy => enemy.name === name).bonusStats.rate = saveData.enemyRate.ehp[name]);
         this.battleTime = saveData.battleTime;
+        this.setStage(saveData.stage || 0);
+
         this.updateStats();
     }
 
