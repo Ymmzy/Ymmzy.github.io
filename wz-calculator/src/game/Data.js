@@ -462,7 +462,7 @@ const EQUIPMENT_DATA = [
     {
         name: "末世",
         type: EQUIPMENT_TYPE.physical,
-        price: 2160,
+        price: 2100,
         stats: {
             maxHP: 500,
             physicalAttack: 40,
@@ -479,7 +479,7 @@ const EQUIPMENT_DATA = [
                     defender,
                     "末世",
                     DAMAGE_TYPE.physical,
-                    growByLevel(attacker.level, 85, 170) + 0.07 * defender.getExtraStat(STAT.maxHP),
+                    growByLevel(attacker.level, 80, 160) + 0.07 * defender.getExtraStat(STAT.maxHP),
                     rate),
                 rate: 1
             },
@@ -488,10 +488,10 @@ const EQUIPMENT_DATA = [
     {
         name: "泣血之刃",
         type: EQUIPMENT_TYPE.physical,
-        price: 2000,
+        price: 2020,
         stats: {
             maxHP: 500,
-            physicalAttack: 90,
+            physicalAttack: 85,
             physicalLifesteal: 0.25
         },
         passiveList: [
@@ -501,7 +501,7 @@ const EQUIPMENT_DATA = [
                 trigger: [TRIGGER.defend],
                 effect: (attacker, defender, rate) => {},
                 rate: 1,
-                priority: 0.2
+                priority: 0.25
             },
         ]
     },
@@ -1073,7 +1073,7 @@ const EQUIPMENT_DATA = [
                     defender,
                     "怒龙剑盾",
                     DAMAGE_TYPE.physical,
-                    attacker.getStat(STAT.maxHP) * 0.03 * attacker.getStat(STAT.attackRange) === STAT.ATTACK_RANGE.ranged? 0.5: 1,
+                    attacker.getStat(STAT.maxHP) * 0.035 * attacker.getStat(STAT.attackRange) === STAT.ATTACK_RANGE.ranged? 0.5: 1,
                     2,
                     rate
                 ),
@@ -1269,7 +1269,70 @@ const EQUIPMENT_DATA = [
             }
         ]
     },
-
+    {
+        name: "雌雄双股",
+        type: EQUIPMENT_TYPE.physical,
+        price: 2060,
+        stats: {
+            physicalAttack: 80,
+            maxHP: 600,
+            moveSpeedIncreased: 0.075
+        },
+        passiveList: [
+        ]
+    },
+    {
+        name: "玄铁古锭",
+        type: EQUIPMENT_TYPE.physical,
+        price: 2060,
+        stats: {
+            attackSpeed: 0.3,
+            maxHP: 500,
+            cooldownReduction: 0.075
+        },
+        passiveList: [
+        ]
+    },
+    {
+        name: "尚武青釭",
+        type: EQUIPMENT_TYPE.defense,
+        price: 2060,
+        stats: {
+            physicalAttack: 35,
+            maxHP: 500,
+            physicalDefense: 150,
+            magicDefense: 75,
+            moveSpeedIncreased: 0.075
+        },
+        passiveList: [
+        ]
+    },
+    {
+        name: "传国碧玺",
+        type: EQUIPMENT_TYPE.defense,
+        price: 2540,
+        stats: {
+            physicalAttack: 65,
+            attackSpeed: 0.15,
+            maxHP: 500,
+            physicalDefense: 150,
+            magicDefense: 75,
+            cooldownReduction: 0.075,
+            moveSpeedIncreased: 0.075
+        },
+        active: {
+            name: "天赋恩赐",
+            tags: [SKILL_TAG.stat],
+            effect: (holder, rate) => {
+                EFFECT.statAdd(holder, STAT.physicalAttack, 25, rate / 2);
+                EFFECT.statAdd(holder, STAT.attackSpeed, 0.1, rate / 2);
+            },
+            rate: 1,
+            cooldown: 30,
+        },
+        passiveList: [
+        ]
+    },
 ];
 const RUNE_DATA = [
     {
