@@ -7,7 +7,7 @@ let hero = null;
 let updates = null;
 
 function init() {
-    console.warn("版本：20250703");
+    console.warn("版本：" + VERSION);
     initData();
     initButton();
 
