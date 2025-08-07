@@ -2,7 +2,7 @@ import Hero from "./game/Hero.js"
 import {HERO_DATA, ENEMY_DATA, EQUIPMENT_DATA, RUNE_DATA, RUNE_COLOR, DAMAGE_TYPE} from "./game/Data.js"
 import Equipment from "./game/Equipment.js";
 
-const VERSION = '20250804';
+const VERSION = '20250807';
 let hero = null;
 let updates = null;
 

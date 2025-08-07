@@ -1191,7 +1191,8 @@ const EQUIPMENT_DATA = [
         type: EQUIPMENT_TYPE.move,
         price: 700,
         stats: {
-            maxMP: 550
+            maxMP: 400,
+            mpRegen: 10 / 5
         },
         passiveList: [
             {
@@ -1410,7 +1411,7 @@ const RUNE_DATA = [
         name: "长生",
         color: RUNE_COLOR.blue,
         stats: {
-            maxHP: 75
+            maxHP: 90
         },
         level: 5
     },
@@ -1445,7 +1446,7 @@ const RUNE_DATA = [
         color: RUNE_COLOR.blue,
         stats: {
             physicalLifesteal: 0.01,
-            magicDefense: 4.1
+            magicDefense: 5
         },
         level: 5
     },
@@ -1453,9 +1454,9 @@ const RUNE_DATA = [
         name: "调和",
         color: RUNE_COLOR.blue,
         stats: {
-            maxHP: 45,
-            hpRegen: 5.2 / 5,
-            moveSpeedIncreased: 0.004
+            maxHP: 50,
+            hpRegen: 5 / 5,
+            moveSpeedIncreased: 0.005
         },
         level: 5
     },
@@ -1480,7 +1481,7 @@ const RUNE_DATA = [
         name: "霸者",
         color: RUNE_COLOR.green,
         stats: {
-            physicalDefense: 9
+            physicalDefense: 14
         },
         level: 5
     },
@@ -1488,8 +1489,8 @@ const RUNE_DATA = [
         name: "均衡",
         color: RUNE_COLOR.green,
         stats: {
-            physicalDefense: 5,
-            magicDefense: 5
+            physicalDefense: 7,
+            magicDefense: 7
         },
         level: 5
     },
@@ -1497,8 +1498,8 @@ const RUNE_DATA = [
         name: "虚空",
         color: RUNE_COLOR.green,
         stats: {
-            maxHP: 37.5,
-            cooldownReduction: 0.006
+            maxHP: 45,
+            cooldownReduction: 0.005
         },
         level: 5
     },
@@ -1506,7 +1507,7 @@ const RUNE_DATA = [
         name: "灵山",
         color: RUNE_COLOR.green,
         stats: {
-            magicDefense: 9
+            magicDefense: 14
         },
         level: 5
     },
@@ -1514,9 +1515,9 @@ const RUNE_DATA = [
         name: "回声",
         color: RUNE_COLOR.green,
         stats: {
-            physicalDefense: 2.7,
-            magicDefense: 2.7,
-            cooldownReduction: 0.006
+            physicalDefense: 3.5,
+            magicDefense: 3.5,
+            cooldownReduction: 0.0075
         },
         level: 5
     },
