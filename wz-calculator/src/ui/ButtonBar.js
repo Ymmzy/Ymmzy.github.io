@@ -218,7 +218,7 @@ export function initButton(hero, updates) {
         dlg = openDialog({
             content: container,
             padding: '10px',
-            follow: event.target,
+            follow: isMobile ? null : event.target,
         });
     };
 
