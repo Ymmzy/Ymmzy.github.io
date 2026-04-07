@@ -88,25 +88,16 @@ body {
         height: auto;
     }
 
-    #heroGrid {
-        height: 450px;
+    .left-section, .right-section {
+        display: contents;
     }
 
-    #equipmentGrid {
-        height: 203px;
-    }
-
-    #runeGrid {
-        height: 175px;
-    }
-
-    #shopGrid {
-        height: 600px;
-    }
-
-    #runeShopGrid {
-        height: 206px;
-    }
+    #buttonContainer { order: 0; }
+    #heroGrid        { order: 1; height: 450px; }
+    #equipmentGrid   { order: 2; height: 203px; }
+    #shopGrid        { order: 3; height: 600px; }
+    #runeGrid        { order: 4; height: 175px; }
+    #runeShopGrid    { order: 5; height: 206px; }
 }
 
 .ag-theme-alpine-dark {
