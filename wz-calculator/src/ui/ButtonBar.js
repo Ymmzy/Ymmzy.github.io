@@ -159,9 +159,13 @@ export function initButton(hero, updates) {
     btnContainer.appendChild(slotBtn);
     slotBtn.onclick = event => {
         const slots = readSlots();
+        const isMobile = window.innerWidth <= 400;
         const container = document.createElement("div");
-        container.style.cssText = "display:flex;flex-direction:column;gap:4px;max-width:calc(100vw - 40px);";
+        container.style.cssText = isMobile
+            ? "display:flex;flex-direction:column;gap:4px;width:80vw;"
+            : "display:flex;flex-direction:column;gap:4px;";
 
+        let dlg;
         for (let i = 1; i <= SLOT_COUNT; i++) {
             const row = document.createElement("div");
             row.style.cssText = "display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px solid #333;";
@@ -171,12 +175,12 @@ export function initButton(hero, updates) {
             label.textContent = `槽位${i}`;
 
             const info = document.createElement("span");
-            info.style.cssText = "font-size:12px;flex:1;min-width:0;overflow:hidden;white-space:nowrap;font-family:monospace;";
+            info.style.cssText = "font-size:12px;flex:1;min-width:0;overflow-x:auto;white-space:nowrap;font-family:monospace;";
             renderSlotInfo(info, slots[i]?.hero);
 
             const saveBtn = document.createElement("button");
             saveBtn.textContent = "存";
-            saveBtn.style.cssText = "padding:2px 8px;font-size:12px;cursor:pointer;background:#2a4a2a;color:#ccc;border:1px solid #555;border-radius:3px;";
+            saveBtn.style.cssText = "padding:2px 8px;font-size:12px;cursor:pointer;background:#2a4a2a;color:#ccc;border:1px solid #555;border-radius:3px;flex-shrink:0;";
             saveBtn.onclick = () => {
                 const current = readSlots();
                 const saveData = getFullSaveData();
@@ -192,7 +196,7 @@ export function initButton(hero, updates) {
 
             const loadBtn = document.createElement("button");
             loadBtn.textContent = "读";
-            loadBtn.style.cssText = "padding:2px 8px;font-size:12px;cursor:pointer;background:#2a2a4a;color:#ccc;border:1px solid #555;border-radius:3px;";
+            loadBtn.style.cssText = "padding:2px 8px;font-size:12px;cursor:pointer;background:#2a2a4a;color:#ccc;border:1px solid #555;border-radius:3px;flex-shrink:0;";
             loadBtn.onclick = () => {
                 const current = readSlots();
                 if (!current[i]) return;
@@ -200,13 +204,18 @@ export function initButton(hero, updates) {
                 localStorage.setItem('lastSlot', i);
                 updateSlotBtn(i);
                 select.value = hero.stage;
+                if (dlg) dlg.close();
             };
 
-            row.append(label, info, saveBtn, loadBtn);
+            if (isMobile) {
+                row.append(label, saveBtn, loadBtn, info);
+            } else {
+                row.append(label, info, saveBtn, loadBtn);
+            }
             container.appendChild(row);
         }
 
-        openDialog({
+        dlg = openDialog({
             content: container,
             padding: '10px',
             follow: event.target,
