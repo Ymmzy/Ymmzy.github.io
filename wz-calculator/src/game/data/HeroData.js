@@ -124,6 +124,7 @@ export const HERO_DATA = [
                             name: "放生: 蔚蓝石像",
                             tags: [SKILL_TAG.damage],
                             trigger: [TRIGGER.normalAttack],
+                            rate: 1,
                             effect: (attacker, defender, rate) => EFFECT.damageNA(
                                 attacker,
                                 defender,
