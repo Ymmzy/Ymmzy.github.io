@@ -440,10 +440,10 @@ export const EQUIPMENT_DATA = [
         type: EQUIPMENT_TYPE.physical,
         price: 2040,
         stats: {
-            attackSpeed: 0.2,
-            criticalRate: 0.2,
             maxHP: 650,
-            moveSpeedIncreased: 0.075
+            physicalAttack: 40,
+            attackSpeed: 0.2,
+            criticalRate: 0.2
         },
         passiveList: [],
         active: {
@@ -1012,6 +1012,114 @@ export const EQUIPMENT_DATA = [
                 trigger: [TRIGGER.auto],
                 effect: (holder, rate) => EFFECT.statAdd(holder, STAT.moveSpeedBase, growByLevel(holder.level, 35, 70), rate),
                 rate: 1
+            }
+        ]
+    },
+    {
+        name: "巡守利斧",
+        type: EQUIPMENT_TYPE.jungle,
+        price: 700,
+        stats: {
+            maxHP: 850,
+        },
+        passiveList: [
+            {
+                name: "狩猎",
+                tags: [SKILL_TAG.damage],
+                trigger: [TRIGGER.normalAttack, TRIGGER.skill],
+                effect: (attacker, defender, rate) => EFFECT.damageCD(
+                    attacker,
+                    defender,
+                    "巡守利斧",
+                    DAMAGE_TYPE.physical,
+                    0.1 * (growByLevel(attacker.level, 70, 140) + 0.0045 * defender.getStat(STAT.maxHP)),
+                    0.5,
+                    rate
+                ),
+                rate: 1,
+                priority: 700
+            }
+        ]
+    },
+    {
+        name: "巨人之握",
+        type: EQUIPMENT_TYPE.jungle,
+        price: 2100,
+        stats: {
+            cooldownReduction: 0.1,
+            maxHP: 1950,
+            moveSpeedIncreased: 0.05
+        },
+        passiveList: [
+            {
+                name: "狩猎",
+                tags: [SKILL_TAG.damage],
+                trigger: [TRIGGER.normalAttack, TRIGGER.skill],
+                effect: (attacker, defender, rate) => EFFECT.damageCD(
+                    attacker,
+                    defender,
+                    "巨人之握",
+                    DAMAGE_TYPE.physical,
+                    0.25 * (growByLevel(attacker.level, 90, 180) + 0.006 * defender.getStat(STAT.maxHP)),
+                    0.5,
+                    rate
+                ),
+                rate: 1,
+                priority: 2100
+            }
+        ]
+    },
+    {
+        name: "追击刀锋",
+        type: EQUIPMENT_TYPE.jungle,
+        price: 700,
+        stats: {
+            physicalAttack: 70
+        },
+        passiveList: [
+            {
+                name: "狩猎",
+                tags: [SKILL_TAG.damage],
+                trigger: [TRIGGER.normalAttack, TRIGGER.skill],
+                effect: (attacker, defender, rate) => EFFECT.damageCD(
+                    attacker,
+                    defender,
+                    "追击刀锋",
+                    DAMAGE_TYPE.physical,
+                    0.1 * (growByLevel(attacker.level, 70, 140) + 0.0045 * defender.getStat(STAT.maxHP)),
+                    0.5,
+                    rate
+                ),
+                rate: 1,
+                priority: 700
+            }
+        ]
+    },
+    {
+        name: "贪婪之噬",
+        type: EQUIPMENT_TYPE.jungle,
+        price: 2100,
+        stats: {
+            physicalAttack: 165,
+            cooldownReduction: 0.125,
+            moveSpeedIncreased: 0.05
+        },
+        passiveList: [
+            {
+                name: "狩猎",
+                tags: [SKILL_TAG.damage],
+                trigger: [TRIGGER.normalAttack, TRIGGER.skill],
+                effect: (attacker, defender, rate) => EFFECT.damageCD(
+                    attacker,
+                    defender,
+                    "贪婪之噬",
+                    DAMAGE_TYPE.physical,
+                    0.25 * (growByLevel(attacker.level, 90, 180) + 0.006 * defender.getStat(STAT.maxHP)),
+                    0.5,
+                    rate
+                ),
+                rate: 1,
+                priority: 2100
             }
         ]
     },
