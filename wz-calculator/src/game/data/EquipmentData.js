@@ -290,7 +290,7 @@ export const EQUIPMENT_DATA = [
                 trigger: [TRIGGER.auto],
                 effect: (holder, rate) => {
                     EFFECT.statAdd(holder, STAT.attackSpeed, 0.2, rate);
-                    EFFECT.statAdd(holder, STAT.moveSpeedIncreased, 0.1, rate);
+                    EFFECT.statAdd(holder, STAT.moveSpeedIncreased, 0.05, rate);
                 },
                 rate: 1
             },
