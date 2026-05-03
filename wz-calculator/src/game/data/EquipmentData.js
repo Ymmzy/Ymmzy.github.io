@@ -457,7 +457,7 @@ export const EQUIPMENT_DATA = [
                 75,
                 rate
             ),
-            rate: 0.5,
+            rate: 0.3,
             cooldown: 75,
         }
     },

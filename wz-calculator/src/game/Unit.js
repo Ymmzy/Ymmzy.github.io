@@ -148,7 +148,7 @@ export default class Unit {
 
         this.extraStats = this.skinStats.clone().add(this.bonusStats);
         this.totalPrice = 0;
-        this.active = null;
+        this.activeList = [];
         this.passiveList = [];
         this.damageNAList = {[this.name]: []};
         this.damageCDList = {[this.name]: []};
@@ -165,7 +165,7 @@ export default class Unit {
         this.equipments.slice(0, stageToEquipmentLimit[this.stage]).forEach(equipment => {
             this.extraStats.add(equipment.stats);
             this.totalPrice += equipment.price;
-            if (!this.active) this.active = equipment.active;
+            if (equipment.active) this.activeList.push(equipment.active);
             equipment.passiveList.forEach(passive => {
                 let exist = this.passiveList.findIndex(p => p.name === passive.name);
                 if (exist === -1) {

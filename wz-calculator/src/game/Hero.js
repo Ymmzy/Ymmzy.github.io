@@ -72,9 +72,7 @@ export default class Hero extends Unit {
         this.mergeStats();
 
         // 3. 计算主动加成
-        if (this.active) {
-            this.active.effect(this, this.active.rate);
-        }
+        this.activeList.forEach(active => active.effect(this, active.rate));
         this.mergeStats();
 
         // 4. 计算属性被动加成
