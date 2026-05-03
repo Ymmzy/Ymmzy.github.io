@@ -165,7 +165,7 @@ export default class Unit {
         this.equipments.slice(0, stageToEquipmentLimit[this.stage]).forEach(equipment => {
             this.extraStats.add(equipment.stats);
             this.totalPrice += equipment.price;
-            if (equipment.active) this.activeList.push(equipment.active);
+            if (equipment.active && !this.activeList.some(a => a.name === equipment.active.name)) this.activeList.push(equipment.active);
             equipment.passiveList.forEach(passive => {
                 let exist = this.passiveList.findIndex(p => p.name === passive.name);
                 if (exist === -1) {
