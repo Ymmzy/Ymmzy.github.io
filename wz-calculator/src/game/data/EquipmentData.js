@@ -413,7 +413,7 @@ export const EQUIPMENT_DATA = [
         ]
     },
     {
-        name: "名刀·司命",
+        name: "名刀司命",
         type: EQUIPMENT_TYPE.physical,
         price: 2060,
         stats: {
@@ -1021,6 +1021,7 @@ export const EQUIPMENT_DATA = [
         price: 700,
         stats: {
             maxHP: 850,
+            cooldownReduction: 0.2
         },
         passiveList: [
             {
@@ -1046,7 +1047,7 @@ export const EQUIPMENT_DATA = [
         type: EQUIPMENT_TYPE.jungle,
         price: 2100,
         stats: {
-            cooldownReduction: 0.1,
+            cooldownReduction: 0.3,
             maxHP: 1950,
             moveSpeedIncreased: 0.05
         },
@@ -1074,7 +1075,8 @@ export const EQUIPMENT_DATA = [
         type: EQUIPMENT_TYPE.jungle,
         price: 700,
         stats: {
-            physicalAttack: 70
+            physicalAttack: 70,
+            cooldownReduction: 0.2
         },
         passiveList: [
             {
@@ -1101,7 +1103,7 @@ export const EQUIPMENT_DATA = [
         price: 2100,
         stats: {
             physicalAttack: 165,
-            cooldownReduction: 0.125,
+            cooldownReduction: 0.325,
             moveSpeedIncreased: 0.05
         },
         passiveList: [
