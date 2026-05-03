@@ -85,7 +85,7 @@ export const HERO_DATA = [
                             valueMax: 280
                         },
                         "猎豹": {
-                            name: STAT.moveSpeedIncreased,
+                            name: STAT.moveSpeedBase,
                             valueMin: 25,
                             valueMax: 50
                         },
