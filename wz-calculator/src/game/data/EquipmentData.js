@@ -453,7 +453,7 @@ export const EQUIPMENT_DATA = [
                 holder,
                 holder,
                 "幽影袖箭",
-                5 * (growByLevel(holder.level, 110, 220) + holder.getStat(STAT.maxHP) * 0.06),
+                5 * (growByLevel(holder.level, 110, 220) + holder.getStat(STAT.maxHP) * 0.5 * 0.06),
                 75,
                 rate
             ),
