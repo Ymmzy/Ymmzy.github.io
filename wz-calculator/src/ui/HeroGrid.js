@@ -102,6 +102,7 @@ export function initHeroGrid(hero, updates) {
                 }
             };
 
+            const bodyChildrenBefore = new Set(document.body.children);
             if (params.data.key.includes("DPS")) {
                 const opts = tooltipColumns('伤害');
                 createGrid(this.children[0], opts, hero.damageNAList[params.data.enemy].map(d => ({...d, cooldown: "-"})));
@@ -114,7 +115,7 @@ export function initHeroGrid(hero, updates) {
                     type: s.types.includes(DAMAGE_TYPE.real) ? "真实" : s.types.length === 1 ? s.types[0] : "普通"
                 })));
             }
-            this.popupDiv = [...document.body.children].slice(-2);
+            this.popupDiv = [...document.body.children].filter(el => !bodyChildrenBefore.has(el));
         }
 
         getGui() {
